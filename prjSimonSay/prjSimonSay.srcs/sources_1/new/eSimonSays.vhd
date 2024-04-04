@@ -11,6 +11,13 @@ entity eSimonSays is
     );
 end eSimonSays;
 
+component eStateMachine is
+    Port ( 
+        CLK, RST, enter: in std_logic;
+        S: out STD_LOGIC;
+    );
+end component eStateMachine;
+
 architecture Behavioral of eSimonSays is
 
 begin

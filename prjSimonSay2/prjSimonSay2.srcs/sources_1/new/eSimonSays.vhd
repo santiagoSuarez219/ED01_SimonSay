@@ -8,7 +8,8 @@ entity eSimonSays is
         salidaMux2: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux4: out STD_LOGIC_VECTOR(3 downto 0);
-        secuencia: out STD_LOGIC_VECTOR(3 downto 0)
+        secuencia: out STD_LOGIC_VECTOR(3 downto 0);
+        outCrometro: out STD_LOGIC_VECTOR(3 downto 0)
     );
 end eSimonSays;
 
@@ -25,8 +26,8 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria: out STD_LOGIC;
+        CLK, RST, enter, iSecuenciaAleatoriaT: in std_logic;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro: out STD_LOGIC;
         longitudSecuencia: out integer range 4 to 32
     );
 end component eStateMachine;
@@ -47,7 +48,16 @@ component eContadorSecuencia is
     );
 end component eContadorSecuencia;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i : STD_LOGIC;
+component eCronometro is
+    Port ( 
+        CLK, RST : in STD_LOGIC;
+        indicadorCero: out STD_LOGIC;
+        outCuenta : out STD_LOGIC_VECTOR(3 downto 0)
+    );
+end component eCronometro;
+
+
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i: STD_LOGIC;
 signal outSecuencia_i : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i : STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 4 to 32 := 3;
@@ -63,9 +73,11 @@ begin
         CLK => CLK, 
         RST => RST, 
         enter => enter,
+        iSecuenciaAleatoriaT => indicadorSecuenciaTerminada_i,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
+        rstCronometro => rstCronometro_i,
         longitudSecuencia => longitudSecuencia_i
     );
     InstSecuenciaAleatoria: eSecuenciaAleatoria port map(
@@ -78,6 +90,12 @@ begin
         longitudSecuencia => longitudSecuencia_i,
         indicadorSecuenciaTerminada => indicadorSecuenciaTerminada_i,
         Q => Q_i
+    );
+    InstCronometro: eCronometro port map(
+        CLK => CLK,
+        RST => rstCronometro_i,
+        indicadorCero => indicadorCero_i,
+        outCuenta => outCrometro
     );
  
 end Behavioral;

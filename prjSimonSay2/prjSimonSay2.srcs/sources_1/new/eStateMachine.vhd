@@ -4,7 +4,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity eStateMachine is
     Port ( 
         CLK, RST, enter: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria: out STD_LOGIC
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria: out STD_LOGIC;
+        longitudSecuencia: out integer range 4 to 32
     );
 end eStateMachine;
 
@@ -15,6 +16,7 @@ signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
 signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i : std_logic;
+signal longitudSecuencia_i: integer range 4 to 32 := 3;
 
 begin
     SYNC_PROC: process (CLK)
@@ -25,11 +27,13 @@ begin
                 S <= '0';
                 selectorSecuenciaMux <= '0';
                 rstSecuenciaAleatoria <= '1';
+                longitudSecuencia <= 4;
             else
                 state <= next_state;
                 S <= S_i;
                 selectorSecuenciaMux <= selectorSecuenciaMux_i;
                 rstSecuenciaAleatoria <= rstSecuenciaAleatoria_i;
+                longitudSecuencia <= longitudSecuencia_i;
           end if;
        end if;
     end process;
@@ -41,10 +45,12 @@ begin
             S_i <= '0';
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '1';
+            longitudSecuencia_i <= 3;
         elsif state = S1 then
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
             rstSecuenciaAleatoria_i <= '0';
+            longitudSecuencia_i <= longitudSecuencia_i + 1;
         end if;
     end process;
  

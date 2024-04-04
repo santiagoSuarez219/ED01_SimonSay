@@ -26,7 +26,8 @@ end component eMux2to1;
 component eStateMachine is
     Port ( 
         CLK, RST, enter: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria: out STD_LOGIC
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria: out STD_LOGIC;
+        longitudSecuencia: out integer range 4 to 32
     );
 end component eStateMachine;
 
@@ -40,6 +41,8 @@ end component eSecuenciaAleatoria;
 component eContadorSecuencia is
     Port ( 
         CLK, RST: in STD_LOGIC;
+        longitudSecuencia: in integer range 4 to 32;
+        indicadorSecuenciaTerminada: out STD_LOGIC;
         Q : out STD_LOGIC_VECTOR(4 downto 0)
     );
 end component eContadorSecuencia;
@@ -47,6 +50,7 @@ end component eContadorSecuencia;
 signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i : STD_LOGIC;
 signal outSecuencia_i : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i : STD_LOGIC_VECTOR(4 downto 0);
+signal longitudSecuencia_i: integer range 4 to 32 := 3;
 
 
 begin
@@ -61,7 +65,8 @@ begin
         enter => enter,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
-        rstSecuenciaAleatoria => rstSecuenciaAleatoria_i
+        rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
+        longitudSecuencia => longitudSecuencia_i
     );
     InstSecuenciaAleatoria: eSecuenciaAleatoria port map(
         selectorSecuencia => Q_i,
@@ -70,6 +75,8 @@ begin
     InstContadorSecuencia: eContadorSecuencia port map(
         CLK => CLK,
         RST => rstSecuenciaAleatoria_i,
+        longitudSecuencia => longitudSecuencia_i,
+        indicadorSecuenciaTerminada => indicadorSecuenciaTerminada_i,
         Q => Q_i
     );
  

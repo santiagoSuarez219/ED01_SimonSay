@@ -19,12 +19,8 @@ begin
         if RST = '1' then
             cuenta := "0011";
             indicadorCero <= '0';
-        elsif rising_edge(CLK) then
+        elsif rising_edge(CLK) and cuenta > "0000" then
             cuenta := cuenta - 1;
-            if cuenta = "0000" then
-                cuenta := "0011";
-                indicadorCero <= '1';
-            end if;
         end if;
 
         outCuenta <= cuenta;

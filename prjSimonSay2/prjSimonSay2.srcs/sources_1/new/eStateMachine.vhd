@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero: in std_logic;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia: out STD_LOGIC;
         longitudSecuencia: out integer range 4 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -13,7 +13,7 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4,S5); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
@@ -63,7 +63,7 @@ begin
             iSecuenciaUsuario_dir_i <= 0;
             iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
-        elsif state = S1 then
+        elsif state = S1 then -- Estado de mostrar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
             rstSecuenciaAleatoria_i <= '0';
@@ -73,21 +73,21 @@ begin
             iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
             i := 0; -- Se reinicia el registro
-        elsif state = S2 then
+        elsif state = S2 then --  Estado de ingresar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '0';
-            longitudSecuencia_i <= longitudSecuencia_i;
+            rstSecuenciaAleatoria_i <= '1';
+            longitudSecuencia_i <= longitdSecuencia_i;
             rstCronometro_i <= '0';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
-        elsif state = S3 then
+        elsif state = S3 then -- Estado de guardar el registro
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';  
             longitudSecuencia_i <= longitudSecuencia_i;
-            rstCronometro_i <= '0';
+            rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             i := i + 1;
             if A = '1' then
@@ -100,10 +100,28 @@ begin
                 iSecuenciaUsuario_i <= "1101";
             end if;
             selectorClkSecuencia_i <= '1';
+        elsif state = S4 then --Estado de cronometro en cero
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '0';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "1110";
+            selectorClkSecuencia_i <= '0';
+        elsif state = S5 then --Estado de comparacion
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '0';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "1110";
+            selectorClkSecuencia_i <= '0';
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones )
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -128,6 +146,10 @@ begin
             when S3 =>
                 if (CLKBotones'event and CLKBotones = '1') then
                     next_state <= S2;
+                elsif indicadorCero = '1' then
+                    next_state <= S4; --Por ahora no va llegar a S4
+                elsif enter = '1' then
+                    next_state <= S5;
                 else 
                     next_state <= S3;
                 end if;

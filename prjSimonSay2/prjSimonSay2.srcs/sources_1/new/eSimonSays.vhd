@@ -27,7 +27,7 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero: in std_logic;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia: out STD_LOGIC;
         longitudSecuencia: out integer range 4 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -97,6 +97,7 @@ begin
         C => C,
         D => D,
         CLKBotones => CLKBotones_i,
+        indicadorCero => indicadorCero_i,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
@@ -117,8 +118,8 @@ begin
         indicadorSecuenciaTerminada => indicadorSecuenciaTerminada_i,
         Q => Q_i
     );
-    InstCronometro: eCronometro port map(
-        CLK => CLK,
+    InstCronometro: eCronometro port map( --TODO: Posiblemente deba llebar un Mux
+        CLK => CLKBotones,
         RST => rstCronometro_i,
         indicadorCero => indicadorCero_i,
         outCuenta => outCrometro

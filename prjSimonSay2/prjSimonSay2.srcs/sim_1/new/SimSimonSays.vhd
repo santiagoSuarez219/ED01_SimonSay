@@ -9,7 +9,7 @@ architecture Behavioral of SimSimonSays is
 
 component eSimonSays is
     Port (
-        CLK, RST, enter: in std_logic;
+        CLK, RST, enter, A,B,C,D, CLKBotones: in std_logic;
         salidaMux1: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux2: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
@@ -20,7 +20,7 @@ component eSimonSays is
 end component eSimonSays;
 
 signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
-signal CLK, RST, enter : STD_LOGIC;
+signal CLK, RST, enter,A,B,C,D,CLKBotones : STD_LOGIC;
 
 
 begin
@@ -29,6 +29,11 @@ SimSimonSays: eSimonSays port map (
     CLK => CLK,
     RST => RST,
     enter => enter,
+    A => A,
+    B => B,
+    C => C,
+    D => D,
+    CLKBotones => CLKBotones,
     salidaMux1 => salidaMux1,
     salidaMux2 => salidaMux2,
     salidaMux3 => salidaMux3,
@@ -45,6 +50,14 @@ P_CLK: process
     wait for 5 ns;
 end process;
 
+P_CLK_BOTONES: process
+    begin
+    CLKBotones <= '1';
+    wait for 10 ns;
+    CLKBotones <= '0';
+    wait for 10 ns;
+end process;
+
 
 procEstimulos: process
     begin
@@ -57,6 +70,21 @@ procEstimulos: process
         wait for 20 ns;
         enter <= '0';
         wait for 100 ns;
+        C <= '1';
+        wait for 20 ns;
+        C <= '0';
+        wait for 20 ns;
+        A <= '1';
+        wait for 20 ns;
+        A <= '0';
+        wait for 20 ns;
+        C <= '1';
+        wait for 20 ns;
+        C <= '0';
+        wait for 20 ns;
+        D <= '1';
+        wait for 20 ns;
+        D <= '0';
         wait;
 
 end process;

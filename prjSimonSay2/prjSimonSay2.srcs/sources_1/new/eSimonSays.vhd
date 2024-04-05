@@ -9,6 +9,7 @@ entity eSimonSays is
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux4: out STD_LOGIC_VECTOR(3 downto 0);
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
+        secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0)
     );
 end eSimonSays;
@@ -134,5 +135,6 @@ begin
         S => selectorClkSecuencia_i,
         O => CLKBotones_i
     );
+    secuenciaUsuario <= iSecuenciaUsuario_i;
  
 end Behavioral;

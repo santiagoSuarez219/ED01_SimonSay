@@ -61,7 +61,7 @@ begin
             longitudSecuencia_i <= 3;
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= 0;
-            iSecuenciaUsuario_i <= "0000";
+            iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
         elsif state = S1 then
             S_i <= '1';
@@ -70,8 +70,9 @@ begin
             longitudSecuencia_i <= longitudSecuencia_i + 1;
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= 0;
-            iSecuenciaUsuario_i <= "0000";
+            iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
+            i := 0; -- Se reinicia el registro
         elsif state = S2 then
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -79,7 +80,7 @@ begin
             longitudSecuencia_i <= longitudSecuencia_i;
             rstCronometro_i <= '0';
             iSecuenciaUsuario_dir_i <= i;
-            iSecuenciaUsuario_i <= "0000";
+            iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
         elsif state = S3 then
             S_i <= '1';

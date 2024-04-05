@@ -15,11 +15,12 @@ component eSimonSays is
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux4: out STD_LOGIC_VECTOR(3 downto 0);
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
+        secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0)
     );
 end component eSimonSays;
 
-signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
+signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
 signal CLK, RST, enter,A,B,C,D,CLKBotones : STD_LOGIC;
 
 
@@ -39,6 +40,7 @@ SimSimonSays: eSimonSays port map (
     salidaMux3 => salidaMux3,
     salidaMux4 => salidaMux4,
     secuencia => secuencia,
+    secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro
 );
 

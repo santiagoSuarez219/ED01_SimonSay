@@ -10,7 +10,8 @@ entity eSimonSays is
         salidaMux4: out STD_LOGIC_VECTOR(3 downto 0);
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
-        outCrometro: out STD_LOGIC_VECTOR(3 downto 0)
+        outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
+        ledVictoria: out STD_LOGIC
     );
 end eSimonSays;
 
@@ -28,8 +29,8 @@ end component eMux2to1;
 component eStateMachine is
     Port ( 
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia: out STD_LOGIC;
-        longitudSecuencia: out integer range 4 to 32;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador: out STD_LOGIC;
+        longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
         iSecuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0)
     );
@@ -75,11 +76,52 @@ component e1BitMux2 is
     );
 end component e1BitMux2;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i: STD_LOGIC;
+component FlipFlop4Bits is
+    Port ( 
+        D: in STD_LOGIC_VECTOR(3 downto 0); 
+        CLK, RST, EN: in STD_LOGIC;
+        Q: out STD_LOGIC_VECTOR(3 downto 0)
+    );
+end component FlipFlop4Bits;
+
+component CtoComparador is
+    Port (
+        CLK, RST, EN: in STD_LOGIC;
+        valorSecuenciaAleatoria, valorRegistro: in STD_LOGIC_VECTOR (3 downto 0);
+        longitudSecuencia: in integer range 3 to 32; 
+        aciertos: out integer range 0 to 32;
+        esIgual: out STD_LOGIC;
+        selectorSecuencia: out STD_LOGIC_VECTOR (4 downto 0);
+        selectorRegistro: out integer range 0 to 31
+    );
+end component CtoComparador;
+
+component Mux2to15Bits is
+    Port ( 
+        I0 : in STD_LOGIC_VECTOR(4 downto 0);
+        I1 : in STD_LOGIC_VECTOR(4 downto 0);
+        S: in STD_LOGIC;
+        O: out STD_LOGIC_VECTOR(4 downto 0)
+    );
+end component Mux2to15Bits;
+
+component Mux2to1Integer is
+    Port ( 
+        I0 : in integer range 0 to 32;
+        I1 : in integer range 0 to 32;
+        S: in STD_LOGIC;
+        O: out integer range 0 to 32
+    );
+end component Mux2to1Integer;
+
+
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i: STD_LOGIC_VECTOR(3 downto 0);
-signal Q_i : STD_LOGIC_VECTOR(4 downto 0);
-signal longitudSecuencia_i: integer range 4 to 32 := 3;
+signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i : STD_LOGIC_VECTOR(4 downto 0);
+signal longitudSecuencia_i: integer range 3 to 32 := 3;
+signal aciertos_i: integer range 0 to 32 := 0;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
+signal selectorSecuenciaUsuario_i, selectorSecuenciaUsuarioMux_i: integer range 0 to 31;
 
 begin
     Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1);
@@ -103,12 +145,16 @@ begin
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
         rstCronometro => rstCronometro_i,
         selectorClkSecuencia => selectorClkSecuencia_i,
+        rstCtoComparador  => rstCtoComparador_i,
+        enableFlipFlop => enableFlipFlop_i,
+        selectorSecuenciaAleatoriaMux => selectorSecuenciaAleatoriaMux_i,
+        enCtoComparador => enCtoComparador_i,
         longitudSecuencia => longitudSecuencia_i,
         iSecuenciaUsuario_dir => iSecuenciaUsuario_dir_i,
         iSecuenciaUsuario => iSecuenciaUsuario_i
     );
     InstSecuenciaAleatoria: eSecuenciaAleatoria port map(
-        selectorSecuencia => Q_i,
+        selectorSecuencia => selectorSecuencia_i,
         outSecuencia => outSecuencia_i
     );
     InstContadorSecuencia: eContadorSecuencia port map(
@@ -127,7 +173,7 @@ begin
     InstSecuenciaUsuario: rSecuenciaUsuario port map(
         input => iSecuenciaUsuario_i,
         input_dir => iSecuenciaUsuario_dir_i,
-        Selector => 0,
+        Selector => selectorSecuenciaUsuarioMux_i,
         output => outRegistroSecUsu_i
     );
     Inst1BitMux2to1: e1BitMux2 port map(
@@ -136,6 +182,40 @@ begin
         S => selectorClkSecuencia_i,
         O => CLKBotones_i
     );
-    secuenciaUsuario <= iSecuenciaUsuario_i;
- 
+    
+    InstFlipFlop4Bits: FlipFlop4Bits port map ( 
+        D => iSecuenciaUsuario_i,
+        CLK => CLK,
+        RST => rstFlipFlop_i,
+        EN => enableFlipFlop_i,
+        Q => secuenciaUsuario
+    );
+
+    InstCtoComparador: CtoComparador port map (
+        CLK => CLK,
+        RST => rstCtoComparador_i,
+        EN => enCtoComparador_i,          
+        valorSecuenciaAleatoria => outSecuencia_i,
+        valorRegistro => outRegistroSecUsu_i,
+        longitudSecuencia => longitudSecuencia_i,
+        aciertos => aciertos_i,
+        esIgual => ledVictoria,
+        selectorSecuencia => selectorSecuenciaComparador_i,
+        selectorRegistro => selectorSecuenciaUsuario_i
+    );
+
+    InstMux2to15Bits: Mux2to15Bits port map ( 
+            I0 => Q_i,
+            I1 => selectorSecuenciaComparador_i,
+            S => selectorSecuenciaAleatoriaMux_i,
+            O => selectorSecuencia_i
+    );
+
+    InstMux2to1Integer: Mux2to1Integer port map ( 
+            I0 => selectorSecuenciaUsuario_i,
+            I1 => 1,
+            S => rstCtoComparador_i,
+            O => selectorSecuenciaUsuarioMux_i
+    );
+        
 end Behavioral;

@@ -28,7 +28,7 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador: out STD_LOGIC;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -115,7 +115,7 @@ component Mux2to1Integer is
 end component Mux2to1Integer;
 
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i: STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i : STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -140,6 +140,7 @@ begin
         D => D,
         CLKBotones => CLKBotones_i,
         indicadorCero => indicadorCero_i,
+        esIgualSecuencia => ledVictoria_i,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
@@ -199,10 +200,11 @@ begin
         valorRegistro => outRegistroSecUsu_i,
         longitudSecuencia => longitudSecuencia_i,
         aciertos => aciertos_i,
-        esIgual => ledVictoria,
+        esIgual => ledVictoria_i,
         selectorSecuencia => selectorSecuenciaComparador_i,
         selectorRegistro => selectorSecuenciaUsuario_i
     );
+    ledVictoria <= ledVictoria_i;
 
     InstMux2to15Bits: Mux2to15Bits port map ( 
             I0 => Q_i,

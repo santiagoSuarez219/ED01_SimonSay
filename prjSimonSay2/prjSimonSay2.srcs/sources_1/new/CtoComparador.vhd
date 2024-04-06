@@ -91,7 +91,7 @@ begin
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, CLK, EN, valorSecuenciaAleatoria, valorRegistro, longitudSecuencia)
+    NEXT_STATE_DECODE: process (state, RST, EN, valorSecuenciaAleatoria, valorRegistro, longitudSecuencia)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -111,7 +111,11 @@ begin
                     next_state <= S1;
                 end if;
             when S3 =>
-                next_state <= S0;
+                if RST = '1' then
+                    next_state <= S0;
+                else
+                    next_state <= S3;
+                end if;
             when others =>
                 next_state <= S0;
         end case;

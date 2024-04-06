@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador: out STD_LOGIC;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -13,7 +13,7 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S4,S5); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4,S5, S6); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
@@ -136,6 +136,7 @@ begin
             rstCtoComparador_i <= '1';
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
+            enCtoComparador_i <= '0';
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -149,10 +150,23 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
+        elsif state = S5 then --Estado de LED ENCENDIDO Y SUMA DE PUNTAJE
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '0';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "1110";
+            selectorClkSecuencia_i <= '0';
+            rstCtoComparador_i <= '1';
+            enableFlipFlop_i <= '0';
+            selectorSecuenciaAleatoriaMux_i <= '0';
+            enCtoComparador_i <= '0';
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -187,7 +201,13 @@ begin
             when S4 =>
                 next_state <= S4;
             when S5 =>
-                next_state <= S5;
+                if esIgualSecuencia = '1' then
+                    next_state <= S6;
+                else
+                    next_state <= S5;
+                end if;
+            when S6 =>
+                next_state <= S6;
             when others =>
                 next_state <= S0;
         end case;

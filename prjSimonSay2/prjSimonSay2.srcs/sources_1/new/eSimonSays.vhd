@@ -11,7 +11,8 @@ entity eSimonSays is
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
-        ledVictoria: out STD_LOGIC
+        ledVictoria: out STD_LOGIC;
+        puntajeOut : out integer range 0 to 2048
     );
 end eSimonSays;
 
@@ -29,7 +30,9 @@ end component eMux2to1;
 component eStateMachine is
     Port ( 
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje: out STD_LOGIC;
+        aciertosCantidad: in integer range 0 to 32;
+        cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
         iSecuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0)
@@ -114,14 +117,22 @@ component Mux2to1Integer is
     );
 end component Mux2to1Integer;
 
+component eContadorPuntaje is
+    Port ( 
+        CLK, RST, sumarPuntaje: in STD_LOGIC;
+        cantidadSumar: in integer range 0 to 244;
+        puntajeOut : out integer range 0 to 2048
+    );
+end component eContadorPuntaje;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador: STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i : STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal aciertos_i: integer range 0 to 32 := 0;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal selectorSecuenciaUsuario_i, selectorSecuenciaUsuarioMux_i: integer range 0 to 31;
+signal cantidadSumar_i: integer range 0 to 244;
 
 begin
     Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1);
@@ -150,10 +161,15 @@ begin
         enableFlipFlop => enableFlipFlop_i,
         selectorSecuenciaAleatoriaMux => selectorSecuenciaAleatoriaMux_i,
         enCtoComparador => enCtoComparador_i,
+        sumarPuntaje => sumarPuntaje_i,
+        rstPuntaje => rstPuntaje_i,
+        aciertosCantidad => aciertos_i,
+        cantidadSumarPuntaje => cantidadSumar_i,
         longitudSecuencia => longitudSecuencia_i,
         iSecuenciaUsuario_dir => iSecuenciaUsuario_dir_i,
         iSecuenciaUsuario => iSecuenciaUsuario_i
     );
+
     InstSecuenciaAleatoria: eSecuenciaAleatoria port map(
         selectorSecuencia => selectorSecuencia_i,
         outSecuencia => outSecuencia_i
@@ -215,6 +231,13 @@ begin
     );
     ledVictoria <= ledVictoria_i;
 
+    InsteContadorPuntaje: eContadorPuntaje port map(
+        CLK => CLK,
+        RST => rstPuntaje_i,
+        sumarPuntaje => sumarPuntaje_i,
+        cantidadSumar => cantidadSumar_i,
+        puntajeOut => puntajeOut
+    );
 
     InstMux2to15Bits: Mux2to15Bits port map ( 
             I0 => Q_i,

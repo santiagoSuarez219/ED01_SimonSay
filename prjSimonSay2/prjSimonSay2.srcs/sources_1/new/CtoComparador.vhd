@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use ieee.numeric_std.all;
+use IEEE.NUMERIC_STD.all;
 
 entity CtoComparador is
     Port (

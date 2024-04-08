@@ -5,8 +5,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity eContadorPuntaje is
     Port ( 
         CLK, RST, sumarPuntaje: in STD_LOGIC;
-        cantidadSumar: in STD_LOGIC_VECTOR(3 downto 0);
-        puntajeOut : out STD_LOGIC_VECTOR(11 downto 0)
+        cantidadSumar: in integer range 0 to 244;
+        puntajeOut : out integer range 0 to 2048
     );
 end eContadorPuntaje;
 
@@ -14,10 +14,10 @@ architecture Behavioral of eContadorPuntaje is
 
 begin
     process(CLK, RST)
-        variable puntajeInterno : STD_LOGIC_VECTOR(11 downto 0) := (others => '0');
+        variable puntajeInterno : integer range 0 to 2048 ;
     begin
         if RST = '1' then
-            puntajeInterno := (others => '0');
+            puntajeInterno := 0;
         elsif rising_edge(CLK) then
             if sumarPuntaje = '1' then
                 puntajeInterno := puntajeInterno + cantidadSumar;

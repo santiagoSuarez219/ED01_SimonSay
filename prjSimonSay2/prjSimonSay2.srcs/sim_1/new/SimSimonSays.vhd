@@ -17,12 +17,14 @@ component eSimonSays is
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
-        ledVictoria: out STD_LOGIC
+        ledVictoria: out STD_LOGIC;
+        puntajeOut : out integer range 0 to 2048
     );
 end component eSimonSays;
 
 signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
 signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria: STD_LOGIC;
+signal puntajeOut : integer range 0 to 2048;
 
 
 begin
@@ -43,7 +45,8 @@ SimSimonSays: eSimonSays port map (
     secuencia => secuencia,
     secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro,
-    ledVictoria => ledVictoria
+    ledVictoria => ledVictoria,
+    puntajeOut => puntajeOut
 );
 
 P_CLK: process

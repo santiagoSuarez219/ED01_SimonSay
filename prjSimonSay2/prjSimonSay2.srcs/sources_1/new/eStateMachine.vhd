@@ -4,7 +4,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity eStateMachine is
     Port ( 
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje: out STD_LOGIC;
+        aciertosCantidad: in integer range 0 to 32;
+        cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
         iSecuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0)
@@ -17,10 +19,11 @@ type state_type is (S0, S1, S2, S3, S4, S5, S6); -- Declarar todos los estados e
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i: std_logic;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
+signal cantidadSumarPuntaje_i: integer range 0 to 244 := 0;
 
 begin
     SYNC_PROC: process (CLK)
@@ -31,6 +34,7 @@ begin
                 S <= '0';
                 selectorSecuenciaMux <= '0';
                 rstSecuenciaAleatoria <= '1';
+                cantidadSumarPuntaje <= 0;
                 longitudSecuencia <= 3;
                 rstCronometro <= '1';
                 iSecuenciaUsuario_dir <= 0;
@@ -40,6 +44,8 @@ begin
                 enableFlipFlop <= '0';
                 selectorSecuenciaAleatoriaMux <= '0';
                 enCtoComparador <= '0';
+                sumarPuntaje <= '0';
+                rstPuntaje <= '1';
             else
                 state <= next_state;
                 S <= S_i;
@@ -54,6 +60,9 @@ begin
                 enableFlipFlop <= enableFlipFlop_i;
                 selectorSecuenciaAleatoriaMux <= selectorSecuenciaAleatoriaMux_i;
                 enCtoComparador <= enCtoComparador_i;
+                sumarPuntaje <= sumarPuntaje_i;
+                rstPuntaje <= rstPuntaje_i;
+                cantidadSumarPuntaje <= cantidadSumarPuntaje_i;
           end if;
        end if;
     end process;
@@ -75,6 +84,9 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '1';
+            cantidadSumarPuntaje_i <= 0;
         elsif state = S1 then -- Estado de mostrar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
@@ -89,6 +101,9 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= 0;
         elsif state = S2 then --  Estado de ingresar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -102,6 +117,9 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= 0;
         elsif state = S3 then -- Estado de guardar el registro
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -124,6 +142,9 @@ begin
             selectorClkSecuencia_i <= '1';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= 0;
         elsif state = S4 then --Estado de cronometro en cero
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -137,6 +158,9 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= 0;
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -150,7 +174,10 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
-        elsif state = S6 then --Estado de LED ENCENDIDO Y SUMA DE PUNTAJE
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= 0;
+        elsif state = S6 then --Estado SUMA DE PUNTAJE
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '0';
@@ -163,6 +190,9 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
+            cantidadSumarPuntaje_i <= aciertosCantidad * 7;
+            sumarPuntaje_i <= '1';
+            rstPuntaje_i <= '0';
         end if;
     end process;
  
@@ -207,7 +237,7 @@ begin
                     next_state <= S5;
                 end if;
             when S6 =>
-                next_state <= S6;
+                next_state <= S1;
             when others =>
                 next_state <= S0;
         end case;

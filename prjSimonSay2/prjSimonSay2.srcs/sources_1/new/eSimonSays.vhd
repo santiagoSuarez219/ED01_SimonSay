@@ -29,15 +29,16 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje: out STD_LOGIC;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia,cronometroPuntaje : in std_logic;
         aciertosCantidad: in integer range 0 to 32;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
         iSecuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0)
     );
 end component eStateMachine;
+
 
 component eSecuenciaAleatoria is
     Port ( 
@@ -125,14 +126,15 @@ component eContadorPuntaje is
     );
 end component eContadorPuntaje;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i: STD_LOGIC;
-signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador: STD_LOGIC_VECTOR(3 downto 0);
-signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i : STD_LOGIC_VECTOR(4 downto 0);
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i: STD_LOGIC;
+signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
+signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal aciertos_i: integer range 0 to 32 := 0;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal selectorSecuenciaUsuario_i, selectorSecuenciaUsuarioMux_i: integer range 0 to 31;
 signal cantidadSumar_i: integer range 0 to 244;
+
 
 begin
     Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1);
@@ -152,6 +154,8 @@ begin
         CLKBotones => CLKBotones_i,
         indicadorCero => indicadorCero_i,
         esIgualSecuencia => ledVictoria_i,
+        notEsIgualSecuencia => notEsIgual_i,
+        cronometroPuntaje => cronometroPuntaje_i,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
@@ -163,6 +167,7 @@ begin
         enCtoComparador => enCtoComparador_i,
         sumarPuntaje => sumarPuntaje_i,
         rstPuntaje => rstPuntaje_i,
+        rstCronometroPuntaje => rstCronometroPuntaje_i,
         aciertosCantidad => aciertos_i,
         cantidadSumarPuntaje => cantidadSumar_i,
         longitudSecuencia => longitudSecuencia_i,
@@ -192,6 +197,12 @@ begin
         RST => rstCronometroComparador_i, 
         indicadorCero => cronometroIndicadorComparador_i, 
         outCuenta => outCuentaComparador
+    );
+    Inst3Cronometro: eCronometro port map (
+        CLK => CLK,
+        RST => rstCronometroPuntaje_i, 
+        indicadorCero => cronometroPuntaje_i, 
+        outCuenta => outCuentaPuntaje
     );
     InstSecuenciaUsuario: rSecuenciaUsuario port map(
         input => iSecuenciaUsuario_i,

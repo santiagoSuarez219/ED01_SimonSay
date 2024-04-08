@@ -3,9 +3,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia: in std_logic;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje: out STD_LOGIC;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -13,13 +13,14 @@ entity eStateMachine is
     );
 end eStateMachine;
 
+
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S4, S5, S6); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4, S5, S6, S7); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
@@ -46,6 +47,7 @@ begin
                 enCtoComparador <= '0';
                 sumarPuntaje <= '0';
                 rstPuntaje <= '1';
+                rstCronometroPuntaje <= '1';
             else
                 state <= next_state;
                 S <= S_i;
@@ -63,6 +65,7 @@ begin
                 sumarPuntaje <= sumarPuntaje_i;
                 rstPuntaje <= rstPuntaje_i;
                 cantidadSumarPuntaje <= cantidadSumarPuntaje_i;
+                rstCronometroPuntaje <= rstCronometroPuntaje_i;
           end if;
        end if;
     end process;
@@ -87,6 +90,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '1';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S1 then -- Estado de mostrar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
@@ -104,6 +108,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S2 then --  Estado de ingresar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -120,6 +125,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S3 then -- Estado de guardar el registro
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -145,6 +151,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S4 then --Estado de cronometro en cero
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -161,6 +168,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -177,6 +185,7 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
+            rstCronometroPuntaje_i <= '1';
         elsif state = S6 then --Estado SUMA DE PUNTAJE
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -193,10 +202,28 @@ begin
             cantidadSumarPuntaje_i <= aciertosCantidad * 7;
             sumarPuntaje_i <= '1';
             rstPuntaje_i <= '0';
+            rstCronometroPuntaje_i <= '1';
+        elsif state = S7 then --Estado del jugador pierde por no acertar en la secuencia
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "1110";
+            selectorClkSecuencia_i <= '0';
+            rstCtoComparador_i <= '1';
+            enableFlipFlop_i <= '0';
+            selectorSecuenciaAleatoriaMux_i <= '0';
+            enCtoComparador_i <= '0';
+            cantidadSumarPuntaje_i <= cantidadSumarPuntaje_i;
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            rstCronometroPuntaje_i <= '0';
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -233,11 +260,19 @@ begin
             when S5 =>
                 if esIgualSecuencia = '1' then
                     next_state <= S6;
+                elsif notEsIgualSecuencia = '1' then
+                    next_state <= S7;
                 else
                     next_state <= S5;
                 end if;
             when S6 =>
                 next_state <= S1;
+            when S7 =>
+                if cronometroPuntaje = '1' then
+                    next_state <= S0;
+                else
+                    next_state <= S7;
+                end if;
             when others =>
                 next_state <= S0;
         end case;

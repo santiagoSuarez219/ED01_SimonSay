@@ -129,7 +129,37 @@ procEstimulos: process
         enter <= '0';        
         wait for 200 ns;
 
-        -- El usuario pierde 
+        -- El usuario pierde, la secuencia no es igual
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        D <= '1';
+        wait for 60 ns;
+        D <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        enter <= '1';
+        wait for 60 ns;
+        enter <= '0';        
+        wait for 200 ns;
+
+        -- El usuario pierde, cronometro en cero
+
         wait;
 
 

@@ -164,7 +164,7 @@ begin
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';
             longitudSecuencia_i <= longitudSecuencia_i;
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
@@ -180,7 +180,7 @@ begin
         elsif state = S6 then --Estado SUMA DE PUNTAJE
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';
             longitudSecuencia_i <= longitudSecuencia_i;
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
@@ -221,7 +221,7 @@ begin
                     next_state <= S2;
                 end if;
             when S3 =>
-                if (CLKBotones = '1' and A = '0' and B = '0' and C = '0' and D = '0') then
+                if (A = '0' and B = '0' and C = '0' and D = '0') then
                     next_state <= S2;
                 elsif indicadorCero = '1' then
                     next_state <= S4; --Por ahora no va llegar a S4

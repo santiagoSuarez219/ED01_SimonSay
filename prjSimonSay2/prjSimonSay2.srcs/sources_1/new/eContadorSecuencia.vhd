@@ -20,7 +20,7 @@ begin
     process(CLK, RST)
     begin
         if RST = '1' then
-            Q <= "00000";
+            Q_i <= "00000";
             i <= 1;
             indicadorSecuenciaTerminada <= '0';
         elsif rising_edge(CLK) then
@@ -35,8 +35,8 @@ begin
                 i <= i + 1;
                 indicadorSecuenciaTerminada <= '0';
             end if;                
-            Q <= Q_i;
         end if;
+        Q <= Q_i;
 
     end process;
 

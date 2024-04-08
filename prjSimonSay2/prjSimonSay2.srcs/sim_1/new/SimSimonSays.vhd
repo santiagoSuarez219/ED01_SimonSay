@@ -68,6 +68,7 @@ end process;
 
 procEstimulos: process
     begin
+        --Primera secuencia: el usuario gana
         A <= '0';
         B <= '0';
         C <= '0';
@@ -100,7 +101,37 @@ procEstimulos: process
         enter <= '1';
         wait for 60 ns;
         enter <= '0';
+        wait for 200 ns;
+
+        --Primera secuencia: el usuario gana, aumenta en 1 la secuencia
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        D <= '1';
+        wait for 60 ns;
+        D <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        enter <= '1';
+        wait for 60 ns;
+        enter <= '0';        
+        wait for 200 ns;
+
+        -- El usuario pierde 
         wait;
+
 
 end process;
 

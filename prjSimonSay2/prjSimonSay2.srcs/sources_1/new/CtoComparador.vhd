@@ -35,7 +35,7 @@ signal selectorSecuencia_i: STD_LOGIC_VECTOR (4 downto 0);
 signal selectorRegistro_i: integer range 0 to 31;
 
 signal i: integer range 0 to 31 := 0;
-
+signal indicadorError : STD_LOGIC := '0';
 
 begin
 
@@ -73,6 +73,7 @@ begin
             rstCronometro_i <= '1';
             i <= 0;
             notEsIgual_i <= '0';
+            indicadorError <= '0';
         elsif state = S1 then --Comienza a recorrer el array
             aciertos_i <= aciertos_i;
             esIgual_i <= '0';
@@ -86,6 +87,7 @@ begin
                 aciertos_i <= aciertos_i + 1;
             else
                 aciertos_i <= aciertos_i;
+                indicadorError <= '1';
             end if;
             esIgual_i <= '0';
             selectorSecuencia_i <= selectorSecuencia_i + 1;
@@ -108,7 +110,8 @@ begin
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, EN, valorSecuenciaAleatoria, valorRegistro, longitudSecuencia, cronometroIndicador)
+ 
+    NEXT_STATE_DECODE: process (state, EN, valorSecuenciaAleatoria, valorRegistro, longitudSecuencia, cronometroIndicador, indicadorError)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -123,6 +126,8 @@ begin
             when S2 =>
                 --Puede pasar a S1 o S3
                 if (i = longitudSecuencia) then
+                    next_state <= S3;
+                elsif indicadorError = '1' then
                     next_state <= S3;
                 else
                     next_state <= S1;

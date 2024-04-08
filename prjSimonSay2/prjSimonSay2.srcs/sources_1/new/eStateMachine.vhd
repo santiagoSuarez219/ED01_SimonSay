@@ -6,7 +6,7 @@ entity eStateMachine is
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -20,7 +20,7 @@ type state_type is (S0, S1, S2, S3, S4, S5, S6, S7); -- Declarar todos los estad
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
@@ -52,6 +52,7 @@ begin
                 rstVidas <= '1';
                 sumarVida <= '0';
                 restarVida <= '0';
+                rstRegistroUsuario <= '0';
             else
                 state <= next_state;
                 S <= S_i;
@@ -73,6 +74,7 @@ begin
                 rstVidas <= rstVidas_i;
                 sumarVida <= sumarVida_i;
                 restarVida <= restarVida_i;
+                rstRegistroUsuario <= rstRegistroUsuario_i;
           end if;
        end if;
     end process;
@@ -101,6 +103,7 @@ begin
             rstVidas_i <= '1';
             sumarVida_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S1 then -- Estado de mostrar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
@@ -122,6 +125,7 @@ begin
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
             rstCronometroPuntaje_i <= '1';
+            rstRegistroUsuario_i <= '1';
         elsif state = S2 then --  Estado de ingresar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -142,6 +146,7 @@ begin
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S3 then -- Estado de guardar el registro
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -171,6 +176,7 @@ begin
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S4 then --Estado de cronometro en cero
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -191,6 +197,7 @@ begin
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -211,6 +218,7 @@ begin
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S6 then --Estado SUMA DE PUNTAJE
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -224,7 +232,7 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
-            if juegosGanados = 2 or juegosGanados = 12 or juegosGanados = 24 or juegosGanados = 32 then
+            if juegosGanados = 12 or juegosGanados = 24 or juegosGanados = 32 then
                 cantidadSumarPuntaje_i <= aciertosCantidad * 7 + 10;
             else
                 cantidadSumarPuntaje_i <= aciertosCantidad * 7;
@@ -233,13 +241,14 @@ begin
             rstPuntaje_i <= '0';
             rstCronometroPuntaje_i <= '1';
             juegosGanados <= juegosGanados + 1;
-            if juegosGanados = 1 then
+            if juegosGanados = 16 then
                 sumarVida_i <= '1';
             else
                 sumarVida_i <= '0'; 
             end if;
             rstVidas_i <= '0';
             restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         elsif state = S7 then --Estado del jugador pierde. 
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -253,8 +262,8 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
-            cantidadSumarPuntaje_i <= cantidadSumarPuntaje_i;
-            sumarPuntaje_i <= '0';
+            cantidadSumarPuntaje_i <= aciertosCantidad * 7;
+            sumarPuntaje_i <= '1';
             rstPuntaje_i <= '0';
             rstCronometroPuntaje_i <= '0';
             rstVidas_i <= '0';
@@ -264,6 +273,7 @@ begin
             else
                 restarVida_i <= '1';
             end if;
+            rstRegistroUsuario_i <= '1';
         end if;
     end process;
  
@@ -289,7 +299,7 @@ begin
                 elsif enter = '1' then
                     next_state <= S5;
                 elsif indicadorCero = '1' then
-                    next_state <= S7; 
+                    next_state <= S5;
                 else 
                     next_state <= S2;
                 end if;

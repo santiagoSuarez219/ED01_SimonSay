@@ -163,14 +163,14 @@ procEstimulos: process
         wait for 200 ns;
 
         -- El usuario pierde, la secuencia no es igual
-        -- C <= '1';
-        -- wait for 60 ns;
-        -- C <= '0';
-        -- wait for 60 ns;
-        -- A <= '1';
-        -- wait for 60 ns;
-        -- A <= '0';
-        -- wait for 60 ns;
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
         -- C <= '1';
         -- wait for 60 ns;
         -- C <= '0';

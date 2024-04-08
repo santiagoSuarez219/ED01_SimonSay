@@ -18,13 +18,16 @@ component eSimonSays is
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
         ledVictoria: out STD_LOGIC;
+        vidasOut : out integer range 0 to 2;
         puntajeOut : out integer range 0 to 2048
     );
 end component eSimonSays;
 
+
 signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
 signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria: STD_LOGIC;
 signal puntajeOut : integer range 0 to 2048;
+signal vidasOut : integer range 0 to 2;
 
 
 begin
@@ -46,6 +49,7 @@ SimSimonSays: eSimonSays port map (
     secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro,
     ledVictoria => ledVictoria,
+    vidasOut => vidasOut,
     puntajeOut => puntajeOut
 );
 
@@ -123,6 +127,35 @@ procEstimulos: process
         A <= '1';
         wait for 60 ns;
         A <= '0';
+        wait for 60 ns;
+        enter <= '1';
+        wait for 60 ns;
+        enter <= '0';        
+        wait for 200 ns;
+
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        C <= '1';
+        wait for 60 ns;
+        C <= '0';
+        wait for 60 ns;
+        D <= '1';
+        wait for 60 ns;
+        D <= '0';
+        wait for 60 ns;
+        A <= '1';
+        wait for 60 ns;
+        A <= '0';
+        wait for 60 ns;
+        B <= '1';
+        wait for 60 ns;
+        B <= '0';
         wait for 60 ns;
         enter <= '1';
         wait for 60 ns;

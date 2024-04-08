@@ -12,18 +12,17 @@ end eContadorVidas;
 architecture Behavioral of eContadorVidas is
 
 begin
-    process(CLK, RST)
+    process(RST, SumarVida, RestarVida)
         variable vidasInt : integer range 0 to 2 := 1;
     begin
         if RST = '1' then
             vidasInt := 1;
-        elsif rising_edge(CLK) then
-            if SumarVida = '1' then
-                vidasInt := vidasInt + 1;
-            end if;
-            if RestarVida = '1' then
-                vidasInt := vidasInt - 1;
-            end if;
+        end if;
+        if SumarVida = '1' then
+            vidasInt := vidasInt + 1;
+        end if;
+        if RestarVida = '1' then
+            vidasInt := vidasInt - 1;
         end if;
         vidasOut <= vidasInt;
     end process;

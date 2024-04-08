@@ -32,6 +32,7 @@ component eStateMachine is
     Port ( 
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
+        cantidadVidas: in integer range 0 to 2;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
@@ -142,6 +143,7 @@ signal aciertos_i: integer range 0 to 32 := 0;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal selectorSecuenciaUsuario_i, selectorSecuenciaUsuarioMux_i: integer range 0 to 31;
 signal cantidadSumar_i: integer range 0 to 244;
+signal vidasOut_i: integer range 0 to 2;
 
 begin
     Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1); -- Aca va el puntaje
@@ -163,6 +165,7 @@ begin
         esIgualSecuencia => ledVictoria_i,
         notEsIgualSecuencia => notEsIgual_i,
         cronometroPuntaje => cronometroPuntaje_i,
+        cantidadVidas => vidasOut_i,
         S => S_i,
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
@@ -257,8 +260,9 @@ begin
         RST => rstVidas_i,
         SumarVida => sumarVida_i,
         RestarVida => restarVida_i,
-        vidasOut => vidasOut
+        vidasOut => vidasOut_i
     );
+    vidasOut <= vidasOut_i;
 
     InsteContadorPuntaje: eContadorPuntaje port map(
         CLK => CLK,

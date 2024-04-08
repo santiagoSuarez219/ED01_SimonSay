@@ -5,6 +5,7 @@ entity eStateMachine is
     Port ( 
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
+        cantidadVidas: in integer range 0 to 2;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
@@ -24,6 +25,7 @@ signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
 signal cantidadSumarPuntaje_i: integer range 0 to 244 := 0;
+signal juegosGanados: integer range 0 to 32 := 0;
 
 begin
     SYNC_PROC: process (CLK)
@@ -78,7 +80,6 @@ begin
     --MOORE State-Machine - Outputs based on state only
     OUTPUT_DECODE: process (state)
     variable i : integer range 0 to 31 := 0;
-    variable juegosGanados : integer range 0 to 32 := 0;
     begin
         if state = S0 then
             S_i <= '0';
@@ -110,9 +111,9 @@ begin
             iSecuenciaUsuario_i <= "1110";
             selectorClkSecuencia_i <= '0';
             i := 0; -- Se reinicia el registro
+            restarVida_i <= '0';
             rstVidas_i <= '0';
             sumarVida_i <= '0';
-            restarVida_i <= '0';
             rstCtoComparador_i <= '1';
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
@@ -189,7 +190,7 @@ begin
             rstCronometroPuntaje_i <= '1';
             rstVidas_i <= '0';
             sumarVida_i <= '0';
-            restarVida_i <= '1';
+            restarVida_i <= '0';
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -223,7 +224,7 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
-            if juegosGanados = 12 and juegosGanados = 24 and juegosGanados = 32 then
+            if juegosGanados = 2 or juegosGanados = 12 or juegosGanados = 24 or juegosGanados = 32 then
                 cantidadSumarPuntaje_i <= aciertosCantidad * 7 + 10;
             else
                 cantidadSumarPuntaje_i <= aciertosCantidad * 7;
@@ -231,8 +232,8 @@ begin
             sumarPuntaje_i <= '1';
             rstPuntaje_i <= '0';
             rstCronometroPuntaje_i <= '1';
-            juegosGanados := juegosGanados + 1;
-            if juegosGanados = 16 then
+            juegosGanados <= juegosGanados + 1;
+            if juegosGanados = 1 then
                 sumarVida_i <= '1';
             else
                 sumarVida_i <= '0'; 
@@ -243,7 +244,7 @@ begin
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '1';
-            longitudSecuencia_i <= longitudSecuencia_i;
+            longitudSecuencia_i <= longitudSecuencia_i - 1;
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "1110";
@@ -258,11 +259,15 @@ begin
             rstCronometroPuntaje_i <= '0';
             rstVidas_i <= '0';
             sumarVida_i <= '0';
-            restarVida_i <= '1';
+            if cantidadVidas = 0 then
+                restarVida_i <= '0';
+            else
+                restarVida_i <= '1';
+            end if;
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -307,10 +312,14 @@ begin
             when S6 =>
                 next_state <= S1;
             when S7 =>
-                if cronometroPuntaje = '1' then
-                    next_state <= S0;
+                if cantidadVidas = 0 then
+                    if cronometroPuntaje = '1' then 
+                        next_state <= S0;
+                    else
+                        next_state <= S7;
+                    end if;
                 else
-                    next_state <= S7;
+                    next_state <= S1;
                 end if;
             when others =>
                 next_state <= S0;

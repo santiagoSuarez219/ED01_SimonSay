@@ -86,11 +86,11 @@ end component FlipFlop4Bits;
 
 component CtoComparador is
     Port (
-        CLK, RST, EN: in STD_LOGIC;
+        CLK, RST, EN, cronometroIndicador: in STD_LOGIC;
         valorSecuenciaAleatoria, valorRegistro: in STD_LOGIC_VECTOR (3 downto 0);
         longitudSecuencia: in integer range 3 to 32; 
         aciertos: out integer range 0 to 32;
-        esIgual: out STD_LOGIC;
+        esIgual,notEsIgual, rstCronometro: out STD_LOGIC;
         selectorSecuencia: out STD_LOGIC_VECTOR (4 downto 0);
         selectorRegistro: out integer range 0 to 31
     );
@@ -115,8 +115,8 @@ component Mux2to1Integer is
 end component Mux2to1Integer;
 
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i: STD_LOGIC;
-signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i: STD_LOGIC_VECTOR(3 downto 0);
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i: STD_LOGIC;
+signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador: STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i : STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal aciertos_i: integer range 0 to 32 := 0;
@@ -171,6 +171,12 @@ begin
         indicadorCero => indicadorCero_i,
         outCuenta => outCrometro
     );
+    Inst2Cronometro: eCronometro port map (
+        CLK => CLK,
+        RST => rstCronometroComparador_i, 
+        indicadorCero => cronometroIndicadorComparador_i, 
+        outCuenta => outCuentaComparador
+    );
     InstSecuenciaUsuario: rSecuenciaUsuario port map(
         input => iSecuenciaUsuario_i,
         input_dir => iSecuenciaUsuario_dir_i,
@@ -195,16 +201,20 @@ begin
     InstCtoComparador: CtoComparador port map (
         CLK => CLK,
         RST => rstCtoComparador_i,
-        EN => enCtoComparador_i,          
+        EN => enCtoComparador_i,
+        cronometroIndicador => cronometroIndicadorComparador_i,      
         valorSecuenciaAleatoria => outSecuencia_i,
         valorRegistro => outRegistroSecUsu_i,
         longitudSecuencia => longitudSecuencia_i,
         aciertos => aciertos_i,
         esIgual => ledVictoria_i,
+        notEsIgual => notEsIgual_i,
+        rstCronometro => rstCronometroComparador_i,
         selectorSecuencia => selectorSecuenciaComparador_i,
         selectorRegistro => selectorSecuenciaUsuario_i
     );
     ledVictoria <= ledVictoria_i;
+
 
     InstMux2to15Bits: Mux2to15Bits port map ( 
             I0 => Q_i,

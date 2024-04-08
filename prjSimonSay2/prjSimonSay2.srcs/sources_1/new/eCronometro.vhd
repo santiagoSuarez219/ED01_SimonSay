@@ -22,6 +22,12 @@ begin
         elsif rising_edge(CLK) and cuenta > "0000" then
             cuenta := cuenta - 1;
         end if;
+        
+        if cuenta = "0000" then
+            indicadorCero <= '1';
+        else
+            indicadorCero <= '0';
+        end if;
 
         outCuenta <= cuenta;
     end process;

@@ -13,7 +13,7 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S4,S5, S6); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4, S5, S6); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
@@ -39,7 +39,7 @@ begin
                 rstCtoComparador <= '1';
                 enableFlipFlop <= '0';
                 selectorSecuenciaAleatoriaMux <= '0';
-                enCtoComparador_i <= '1';
+                enCtoComparador <= '0';
             else
                 state <= next_state;
                 S <= S_i;
@@ -150,7 +150,7 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
-        elsif state = S5 then --Estado de LED ENCENDIDO Y SUMA DE PUNTAJE
+        elsif state = S6 then --Estado de LED ENCENDIDO Y SUMA DE PUNTAJE
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '0';

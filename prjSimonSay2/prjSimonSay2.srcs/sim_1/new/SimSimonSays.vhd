@@ -60,9 +60,9 @@ end process;
 P_CLK_BOTONES: process
     begin
     CLKBotones <= '1';
-    wait for 120 ns;
+    wait for 10 ns;
     CLKBotones <= '0';
-    wait for 120 ns;
+    wait for 10 ns;
 end process;
 
 
@@ -130,33 +130,33 @@ procEstimulos: process
         wait for 200 ns;
 
         -- El usuario pierde, la secuencia no es igual
-        C <= '1';
-        wait for 60 ns;
-        C <= '0';
-        wait for 60 ns;
-        A <= '1';
-        wait for 60 ns;
-        A <= '0';
-        wait for 60 ns;
-        C <= '1';
-        wait for 60 ns;
-        C <= '0';
-        wait for 60 ns;
-        D <= '1';
-        wait for 60 ns;
-        D <= '0';
-        wait for 60 ns;
-        A <= '1';
-        wait for 60 ns;
-        A <= '0';
-        wait for 60 ns;
-        C <= '1';
-        wait for 60 ns;
-        C <= '0';
-        enter <= '1';
-        wait for 60 ns;
-        enter <= '0';        
-        wait for 200 ns;
+        -- C <= '1';
+        -- wait for 60 ns;
+        -- C <= '0';
+        -- wait for 60 ns;
+        -- A <= '1';
+        -- wait for 60 ns;
+        -- A <= '0';
+        -- wait for 60 ns;
+        -- C <= '1';
+        -- wait for 60 ns;
+        -- C <= '0';
+        -- wait for 60 ns;
+        -- D <= '1';
+        -- wait for 60 ns;
+        -- D <= '0';
+        -- wait for 60 ns;
+        -- A <= '1';
+        -- wait for 60 ns;
+        -- A <= '0';
+        -- wait for 60 ns;
+        -- C <= '1';
+        -- wait for 60 ns;
+        -- C <= '0';
+        -- enter <= '1';
+        -- wait for 60 ns;
+        -- enter <= '0';        
+        -- wait for 200 ns;
 
         -- El usuario pierde, cronometro en cero
 

@@ -244,18 +244,18 @@ begin
                     next_state <= S3;
                 elsif enter = '1' then
                     next_state <= S5;
+                elsif indicadorCero = '1' then
+                    next_state <= S7; 
                 else 
                     next_state <= S2;
                 end if;
             when S3 =>
                 if (A = '0' and B = '0' and C = '0' and D = '0') then
                     next_state <= S2;
-                elsif indicadorCero = '1' then
-                    next_state <= S4; --Por ahora no va llegar a S4
                 else 
                     next_state <= S3;
                 end if;
-            when S4 =>
+            when S4 => --Puede que se elimine este estado
                 next_state <= S4;
             when S5 =>
                 if esIgualSecuencia = '1' then

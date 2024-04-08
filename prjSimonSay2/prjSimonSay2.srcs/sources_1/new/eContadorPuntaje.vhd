@@ -6,7 +6,7 @@ entity eContadorPuntaje is
     Port ( 
         CLK, RST, sumarPuntaje: in STD_LOGIC;
         cantidadSumar: in integer range 0 to 244;
-        puntajeOut : out integer range 0 to 2048
+        puntajeOut : out integer range 0 to 4096
     );
 end eContadorPuntaje;
 
@@ -14,7 +14,7 @@ architecture Behavioral of eContadorPuntaje is
 
 begin
     process(CLK, RST)
-        variable puntajeInterno : integer range 0 to 2048 ;
+        variable puntajeInterno : integer range 0 to 4096;
     begin
         if RST = '1' then
             puntajeInterno := 0;

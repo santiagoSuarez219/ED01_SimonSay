@@ -12,7 +12,8 @@ entity eSimonSays is
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
         ledVictoria: out STD_LOGIC;
-        puntajeOut : out integer range 0 to 2048
+        vidasOut : out integer range 0 to 2;
+        puntajeOut : out integer range 0 to 4096
     );
 end eSimonSays;
 
@@ -29,9 +30,9 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia,cronometroPuntaje : in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -122,11 +123,18 @@ component eContadorPuntaje is
     Port ( 
         CLK, RST, sumarPuntaje: in STD_LOGIC;
         cantidadSumar: in integer range 0 to 244;
-        puntajeOut : out integer range 0 to 2048
+        puntajeOut : out integer range 0 to 4096
     );
 end component eContadorPuntaje;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i: STD_LOGIC;
+component eContadorVidas is
+    Port ( 
+        CLK, RST, SumarVida, RestarVida  : in STD_LOGIC;
+        vidasOut : out integer range 0 to 2
+    );
+end component eContadorVidas;
+
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -135,9 +143,8 @@ signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal selectorSecuenciaUsuario_i, selectorSecuenciaUsuarioMux_i: integer range 0 to 31;
 signal cantidadSumar_i: integer range 0 to 244;
 
-
 begin
-    Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1);
+    Inst1Mux2to1: eMux2to1 port map(I0 => "1000", I1 => "0000", S => S_i, O => salidaMux1); -- Aca va el puntaje
     Inst2Mux2to1: eMux2to1 port map(I0 => "0000", I1 => "0000", S => S_i, O => salidaMux2);
     Inst3Mux2to1: eMux2to1 port map(I0 => "1001", I1 => "0000", S => S_i, O => salidaMux3);
     Inst4Mux2to1: eMux2to1 port map(I0 => "1010", I1 => "0000", S => S_i, O => salidaMux4);
@@ -168,6 +175,9 @@ begin
         sumarPuntaje => sumarPuntaje_i,
         rstPuntaje => rstPuntaje_i,
         rstCronometroPuntaje => rstCronometroPuntaje_i,
+        rstVidas => rstVidas_i,
+        sumarVida => sumarVida_i,
+        restarVida => restarVida_i,
         aciertosCantidad => aciertos_i,
         cantidadSumarPuntaje => cantidadSumar_i,
         longitudSecuencia => longitudSecuencia_i,
@@ -241,6 +251,14 @@ begin
         selectorRegistro => selectorSecuenciaUsuario_i
     );
     ledVictoria <= ledVictoria_i;
+
+    InstContadorVidas: eContadorVidas port map(
+        CLK => CLK,
+        RST => rstVidas_i,
+        SumarVida => sumarVida_i,
+        RestarVida => restarVida_i,
+        vidasOut => vidasOut
+    );
 
     InsteContadorPuntaje: eContadorPuntaje port map(
         CLK => CLK,

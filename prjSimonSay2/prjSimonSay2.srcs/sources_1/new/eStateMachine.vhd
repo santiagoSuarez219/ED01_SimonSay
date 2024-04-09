@@ -6,7 +6,7 @@ entity eStateMachine is
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -16,11 +16,11 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S4, S5, S6, S7); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4, S5, S6, S7, S8); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
@@ -53,6 +53,7 @@ begin
                 sumarVida <= '0';
                 restarVida <= '0';
                 rstRegistroUsuario <= '0';
+                selectorMuxFinJuego <= '0';
             else
                 state <= next_state;
                 S <= S_i;
@@ -75,6 +76,7 @@ begin
                 sumarVida <= sumarVida_i;
                 restarVida <= restarVida_i;
                 rstRegistroUsuario <= rstRegistroUsuario_i;
+                selectorMuxFinJuego <= selectorMuxFinJuego_i;
           end if;
        end if;
     end process;
@@ -104,6 +106,7 @@ begin
             sumarVida_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S1 then -- Estado de mostrar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '1';
@@ -126,6 +129,7 @@ begin
             cantidadSumarPuntaje_i <= 0;
             rstCronometroPuntaje_i <= '1';
             rstRegistroUsuario_i <= '1';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S2 then --  Estado de ingresar secuencia
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -147,6 +151,7 @@ begin
             sumarVida_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S3 then -- Estado de guardar el registro
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -177,6 +182,7 @@ begin
             sumarVida_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S4 then --Estado de cronometro en cero
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -198,6 +204,7 @@ begin
             sumarVida_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S5 then --Estado de comparacion
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -219,7 +226,8 @@ begin
             sumarVida_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
-        elsif state = S6 then --Estado SUMA DE PUNTAJE
+            selectorMuxFinJuego_i <= '0';
+        elsif state = S6 then --Estado gano el juego
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '1';
@@ -232,23 +240,16 @@ begin
             enableFlipFlop_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
-            if juegosGanados = 12 or juegosGanados = 24 or juegosGanados = 32 then
-                cantidadSumarPuntaje_i <= aciertosCantidad * 7 + 10;
-            else
-                cantidadSumarPuntaje_i <= aciertosCantidad * 7;
-            end if;
-            sumarPuntaje_i <= '1';
+            juegosGanados <= juegosGanados + 1;
+            cantidadSumarPuntaje_i <= 0;
+            sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             rstCronometroPuntaje_i <= '1';
-            juegosGanados <= juegosGanados + 1;
-            if juegosGanados = 16 then
-                sumarVida_i <= '1';
-            else
-                sumarVida_i <= '0'; 
-            end if;
+            sumarVida_i <= '0';
             rstVidas_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
+            selectorMuxFinJuego_i <= '0';
         elsif state = S7 then --Estado del jugador pierde. 
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -274,10 +275,47 @@ begin
                 restarVida_i <= '1';
             end if;
             rstRegistroUsuario_i <= '1';
+            selectorMuxFinJuego_i <= '0';
+        elsif state = S8 then --Estado suma de puntaje y/o fin del juego
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "1110";
+            selectorClkSecuencia_i <= '0';
+            rstCtoComparador_i <= '1';
+            enableFlipFlop_i <= '0';
+            selectorSecuenciaAleatoriaMux_i <= '0';
+            enCtoComparador_i <= '0';
+            juegosGanados <= juegosGanados;
+            if juegosGanados = 12 or juegosGanados = 24 or juegosGanados = 32 then
+                cantidadSumarPuntaje_i <= aciertosCantidad * 7 + 10;
+            else
+                cantidadSumarPuntaje_i <= aciertosCantidad * 7;
+            end if;
+            if juegosGanados = 32 then
+                rstCronometroPuntaje_i <= '0';
+                selectorMuxFinJuego_i <= '1';
+            else
+                rstCronometroPuntaje_i <= '1';
+                selectorMuxFinJuego_i <= '0';
+            end if;
+            sumarPuntaje_i <= '1';
+            rstPuntaje_i <= '0';
+            if juegosGanados = 16 then
+                sumarVida_i <= '1';
+            else
+                sumarVida_i <= '0'; 
+            end if;
+            rstVidas_i <= '0';
+            restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas, selectorMuxFinJuego_i)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -320,13 +358,23 @@ begin
                     next_state <= S5;
                 end if;
             when S6 =>
-                next_state <= S1;
+                next_state <= S8;
             when S7 =>
                 if cantidadVidas = 0 then
                     if cronometroPuntaje = '1' then 
                         next_state <= S0;
                     else
                         next_state <= S7;
+                    end if;
+                else
+                    next_state <= S1;
+                end if;
+            when S8 =>
+                if selectorMuxFinJuego_i = '1' then
+                    if cronometroPuntaje = '1' then
+                        next_state <= S0;
+                    else
+                        next_state <= S8;
                     end if;
                 else
                     next_state <= S1;

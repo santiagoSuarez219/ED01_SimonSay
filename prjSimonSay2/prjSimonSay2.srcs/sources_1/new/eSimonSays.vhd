@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eSimonSays is
     Port (
-        CLK, CLKBotones, RST, enter, A,B,C,D: in std_logic;
+        CLK, CLKBotones, RST, enter, A,B,C,D, modoDemo: in std_logic;
         salidaMux1: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux2: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
@@ -12,6 +12,7 @@ entity eSimonSays is
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
         ledVictoria: out STD_LOGIC;
+        ledFinalJuego: out STD_LOGIC_VECTOR(3 downto 0);
         vidasOut : out integer range 0 to 2;
         puntajeOut : out integer range 0 to 4096
     );
@@ -33,7 +34,7 @@ component eStateMachine is
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -43,7 +44,8 @@ end component eStateMachine;
 
 
 component eSecuenciaAleatoria is
-    Port ( 
+    Port (
+        modoDemo: in STD_LOGIC;
         selectorSecuencia: in STD_LOGIC_VECTOR(4 downto 0);
         outSecuencia: out STD_LOGIC_VECTOR(3 downto 0)
     );
@@ -136,7 +138,7 @@ component eContadorVidas is
     );
 end component eContadorVidas;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -183,6 +185,7 @@ begin
         sumarVida => sumarVida_i,
         restarVida => restarVida_i,
         rstRegistroUsuario => rstRegistroUsuario_i,
+        selectorMuxFinJuego => selectorMuxFinJuego_i,
         aciertosCantidad => aciertos_i,
         cantidadSumarPuntaje => cantidadSumar_i,
         longitudSecuencia => longitudSecuencia_i,
@@ -191,6 +194,7 @@ begin
     );
 
     InstSecuenciaAleatoria: eSecuenciaAleatoria port map(
+        modoDemo => modoDemo,
         selectorSecuencia => selectorSecuencia_i,
         outSecuencia => outSecuencia_i
     );
@@ -226,13 +230,37 @@ begin
         Selector => selectorSecuenciaUsuarioMux_i,
         output => outRegistroSecUsu_i
     );
-    Inst1BitMux2to1: e1BitMux2 port map(
+    Inst1BitMux2to1: e1BitMux2 port map( --Tal vez se podria eliminar
         I0 => '0',
         I1 => CLKBotones,
         S => selectorClkSecuencia_i,
         O => CLKBotones_i
     );
-    
+    --Titilen los leds
+    Inst2BitMux2to1: e1BitMux2 port map( 
+        I0 => '0',
+        I1 => CLK,
+        S => selectorMuxFinJuego_i,
+        O => ledFinalJuego(0)
+    );
+    Inst3BitMux2to1: e1BitMux2 port map( 
+        I0 => '0',
+        I1 => CLK,
+        S => selectorMuxFinJuego_i,
+        O => ledFinalJuego(1)
+    );
+    Inst4BitMux2to1: e1BitMux2 port map( 
+        I0 => '0',
+        I1 => CLK,
+        S => selectorMuxFinJuego_i,
+        O => ledFinalJuego(2)
+    );
+    Inst5BitMux2to1: e1BitMux2 port map( 
+        I0 => '0',
+        I1 => CLK,
+        S => selectorMuxFinJuego_i,
+        O => ledFinalJuego(3)
+    );
     InstFlipFlop4Bits: FlipFlop4Bits port map ( 
         D => iSecuenciaUsuario_i,
         CLK => CLK,

@@ -9,7 +9,7 @@ architecture Behavioral of SimSimonSays is
 
 component eSimonSays is
     Port (
-        CLK, CLKBotones, RST, enter, A,B,C,D: in std_logic;
+        CLK, CLKBotones, RST, enter, A,B,C,D, modoDemo: in std_logic;
         salidaMux1: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux2: out STD_LOGIC_VECTOR(3 downto 0);
         salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
@@ -18,16 +18,18 @@ component eSimonSays is
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
         ledVictoria: out STD_LOGIC;
+        ledFinalJuego: out STD_LOGIC_VECTOR(3 downto 0);
         vidasOut : out integer range 0 to 2;
-        puntajeOut : out integer range 0 to 2048
+        puntajeOut : out integer range 0 to 4096
     );
 end component eSimonSays;
 
 
 signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
-signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria: STD_LOGIC;
+signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria, modoDemo: STD_LOGIC;
 signal puntajeOut : integer range 0 to 2048;
 signal vidasOut : integer range 0 to 2;
+signal ledFinalJuego: STD_LOGIC_VECTOR(3 downto 0);
 
 
 begin
@@ -40,6 +42,7 @@ SimSimonSays: eSimonSays port map (
     B => B,
     C => C,
     D => D,
+    modoDemo => modoDemo,
     CLKBotones => CLKBotones,
     salidaMux1 => salidaMux1,
     salidaMux2 => salidaMux2,
@@ -49,6 +52,7 @@ SimSimonSays: eSimonSays port map (
     secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro,
     ledVictoria => ledVictoria,
+    ledFinalJuego => ledFinalJuego,
     vidasOut => vidasOut,
     puntajeOut => puntajeOut
 );
@@ -163,14 +167,14 @@ procEstimulos: process
         wait for 200 ns;
 
         -- El usuario pierde, la secuencia no es igual
-        C <= '1';
-        wait for 60 ns;
-        C <= '0';
-        wait for 60 ns;
-        A <= '1';
-        wait for 60 ns;
-        A <= '0';
-        wait for 60 ns;
+        -- C <= '1';
+        -- wait for 60 ns;
+        -- C <= '0';
+        -- wait for 60 ns;
+        -- A <= '1';
+        -- wait for 60 ns;
+        -- A <= '0';
+        -- wait for 60 ns;
         -- C <= '1';
         -- wait for 60 ns;
         -- C <= '0';

@@ -34,14 +34,13 @@ component eStateMachine is
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
         iSecuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0)
     );
 end component eStateMachine;
-
 
 component eSecuenciaAleatoria is
     Port (
@@ -138,7 +137,7 @@ component eContadorVidas is
     );
 end component eContadorVidas;
 
-signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, rstFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -175,7 +174,6 @@ begin
         rstCronometro => rstCronometro_i,
         selectorClkSecuencia => selectorClkSecuencia_i,
         rstCtoComparador  => rstCtoComparador_i,
-        enableFlipFlop => enableFlipFlop_i,
         selectorSecuenciaAleatoriaMux => selectorSecuenciaAleatoriaMux_i,
         enCtoComparador => enCtoComparador_i,
         sumarPuntaje => sumarPuntaje_i,
@@ -186,6 +184,7 @@ begin
         restarVida => restarVida_i,
         rstRegistroUsuario => rstRegistroUsuario_i,
         selectorMuxFinJuego => selectorMuxFinJuego_i,
+        finJuego => finJuego_i,
         aciertosCantidad => aciertos_i,
         cantidadSumarPuntaje => cantidadSumar_i,
         longitudSecuencia => longitudSecuencia_i,
@@ -230,6 +229,8 @@ begin
         Selector => selectorSecuenciaUsuarioMux_i,
         output => outRegistroSecUsu_i
     );
+    secuenciaUsuario <= iSecuenciaUsuario_i;
+    
     Inst1BitMux2to1: e1BitMux2 port map( --Tal vez se podria eliminar
         I0 => '0',
         I1 => CLKBotones,
@@ -261,14 +262,6 @@ begin
         S => selectorMuxFinJuego_i,
         O => ledFinalJuego(3)
     );
-    InstFlipFlop4Bits: FlipFlop4Bits port map ( 
-        D => iSecuenciaUsuario_i,
-        CLK => CLK,
-        RST => rstFlipFlop_i,
-        EN => enableFlipFlop_i,
-        Q => secuenciaUsuario
-    );
-
     InstCtoComparador: CtoComparador port map (
         CLK => CLK,
         RST => rstCtoComparador_i,

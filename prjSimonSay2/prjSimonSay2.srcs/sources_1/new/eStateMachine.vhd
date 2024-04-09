@@ -6,7 +6,7 @@ entity eStateMachine is
         CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, enableFlipFlop, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -20,7 +20,7 @@ type state_type is (S0, S1, S2, S3, S4, S5, S6, S7, S8, S9); -- Declarar todos l
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, enableFlipFlop_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
@@ -40,10 +40,10 @@ begin
                 longitudSecuencia <= 3;
                 rstCronometro <= '1';
                 iSecuenciaUsuario_dir <= 0;
-                iSecuenciaUsuario <= "1110";
+                iSecuenciaUsuario <= "0000";
                 selectorClkSecuencia <= '0';
                 rstCtoComparador <= '1';
-                enableFlipFlop <= '0';
+
                 selectorSecuenciaAleatoriaMux <= '0';
                 enCtoComparador <= '0';
                 sumarPuntaje <= '0';
@@ -66,7 +66,7 @@ begin
                 iSecuenciaUsuario <= iSecuenciaUsuario_i;
                 selectorClkSecuencia <= selectorClkSecuencia_i;
                 rstCtoComparador <= rstCtoComparador_i;
-                enableFlipFlop <= enableFlipFlop_i;
+
                 selectorSecuenciaAleatoriaMux <= selectorSecuenciaAleatoriaMux_i;
                 enCtoComparador <= enCtoComparador_i;
                 sumarPuntaje <= sumarPuntaje_i;
@@ -97,7 +97,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -124,7 +124,7 @@ begin
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -144,7 +144,7 @@ begin
             iSecuenciaUsuario_i <= iSecuenciaUsuario_i;
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -175,7 +175,7 @@ begin
             elsif D = '1' then
                 iSecuenciaUsuario_i <= "1111";
             end if;
-            enableFlipFlop_i <= '1';
+
             selectorClkSecuencia_i <= '1';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
@@ -199,7 +199,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -221,7 +221,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
             sumarPuntaje_i <= '0';
@@ -243,7 +243,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados + 1;
@@ -266,7 +266,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             cantidadSumarPuntaje_i <= aciertosCantidad * 7;
@@ -293,7 +293,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados;
@@ -329,7 +329,7 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-            enableFlipFlop_i <= '0';
+
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados;

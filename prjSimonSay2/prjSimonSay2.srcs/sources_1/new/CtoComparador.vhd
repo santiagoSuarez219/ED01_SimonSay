@@ -102,10 +102,11 @@ begin
             i <= 0;
             if aciertos_i = longitudSecuencia then
                 esIgual_i <= '1';
+                notEsIgual_i <= '0';
             else
                 esIgual_i <= '0';
+                notEsIgual_i <= '1';
             end if;
-            notEsIgual_i <= not esIgual_i;
             rstCronometro_i <= '0';
         end if;
     end process;

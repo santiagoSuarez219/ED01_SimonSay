@@ -83,7 +83,7 @@ procEstimulos: process
         enter <= '1';
         wait for 20 ns;
         enter <= '0';
-        wait for 100 ns;
+        wait for 30 ns;
 
         A <= '1';
         wait for 60 ns;
@@ -104,7 +104,7 @@ procEstimulos: process
         enter <= '1';
         wait for 60 ns;
         enter <= '0';
-        wait for 200 ns;
+        wait for 250 ns;
 
         --Primera secuencia: el usuario gana, aumenta en 1 la secuencia
         A <= '1';
@@ -130,7 +130,7 @@ procEstimulos: process
         enter <= '1';
         wait for 60 ns;
         enter <= '0';        
-        wait for 200 ns;
+        wait for 250 ns;
 
         A <= '1';
         wait for 60 ns;
@@ -159,50 +159,50 @@ procEstimulos: process
         enter <= '1';
         wait for 60 ns;
         enter <= '0';        
-        wait for 200 ns;
+        wait for 300 ns;
 
         -- El usuario pierde, la secuencia no es igual
-        -- A <= '1';
-        -- wait for 60 ns;
-        -- A <= '0';
-        -- wait for 60 ns;
-        -- D <= '1';
-        -- wait for 60 ns;
-        -- D <= '0';
-        -- wait for 60 ns;
-        -- A <= '1';
-        -- wait for 60 ns;
-        -- A <= '0';
-        -- wait for 60 ns;
-        -- B <= '1';
-        -- wait for 60 ns;
-        -- B <= '0';
-        -- wait for 60 ns;
-        -- A <= '1'; -- Esta no la acierta
-        -- wait for 60 ns;
-        -- A <= '0';
-        -- wait for 60 ns;
-        -- C <= '1';
-        -- wait for 60 ns;
-        -- C <= '0';
-        -- wait for 60 ns;
-        -- D <= '1';
-        -- wait for 60 ns;
-        -- D <= '0';
-        -- enter <= '1';
-        -- wait for 60 ns;
-        -- enter <= '0';        
-        -- wait for 200 ns;
+        A <= '1';
+        wait for 50 ns;
+        A <= '0';
+        wait for 50 ns;
+        D <= '1';
+        wait for 50 ns;
+        D <= '0';
+        wait for 50 ns;
+        A <= '1';
+        wait for 50 ns;
+        A <= '0';
+        wait for 50 ns;
+        B <= '1';
+        wait for 50 ns;
+        B <= '0';
+        wait for 50 ns;
+        A <= '1'; -- Esta no la acierta
+        wait for 50 ns;
+        A <= '0';
+        wait for 50 ns;
+        C <= '1';
+        wait for 50 ns;
+        C <= '0';
+        wait for 50 ns;
+        D <= '1';
+        wait for 50 ns;
+        D <= '0';
+        enter <= '1';
+        wait for 50 ns;
+        enter <= '0';        
+        wait for 200 ns;
 
         --EL CRONOMETRO LLEGA A CERO
-        A <= '1';
-        wait for 60 ns;
-        A <= '0';
-        wait for 60 ns;
-        D <= '1';
-        wait for 60 ns;
-        D <= '0';
-        wait for 60 ns;
+        -- A <= '1';
+        -- wait for 50 ns;
+        -- A <= '0';
+        -- wait for 50 ns;
+        -- D <= '1';
+        -- wait for 50 ns;
+        -- D <= '0';
+        -- wait for 50 ns;
 
         -- MODO DEMO
         -- A <= '1';

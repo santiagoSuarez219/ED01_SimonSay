@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, indicadorCronometroFin: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
         S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
@@ -16,7 +16,7 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S4, S5, S6, S7, S8, S9); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
@@ -221,7 +221,6 @@ begin
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
-
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
             sumarPuntaje_i <= '0';
@@ -242,7 +241,7 @@ begin
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
-            rstCtoComparador_i <= '1';
+            rstCtoComparador_i <= '0';
 
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
@@ -265,7 +264,7 @@ begin
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
-            rstCtoComparador_i <= '1';
+            rstCtoComparador_i <= '0';
 
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
@@ -292,8 +291,7 @@ begin
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
             selectorClkSecuencia_i <= '0';
-            rstCtoComparador_i <= '1';
-
+            rstCtoComparador_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados;
@@ -316,6 +314,28 @@ begin
             else
                 sumarVida_i <= '0'; 
             end if;
+            rstVidas_i <= '0';
+            restarVida_i <= '0';
+            rstRegistroUsuario_i <= '0';
+        elsif state = S10 then --Estado de cronometro victoria
+            S_i <= '1';
+            selectorSecuenciaMux_i <= '0';
+            rstSecuenciaAleatoria_i <= '1';
+            longitudSecuencia_i <= longitudSecuencia_i;
+            rstCronometro_i <= '1';
+            iSecuenciaUsuario_dir_i <= i;
+            iSecuenciaUsuario_i <= "0000";
+            selectorClkSecuencia_i <= '0';
+            rstCtoComparador_i <= '0';
+            selectorSecuenciaAleatoriaMux_i <= '0';
+            enCtoComparador_i <= '0';
+            juegosGanados <= juegosGanados;
+            cantidadSumarPuntaje_i <= cantidadSumarPuntaje_i;
+            rstCronometroPuntaje_i <= rstCronometroPuntaje_i;
+            selectorMuxFinJuego_i <= selectorMuxFinJuego_i;
+            sumarPuntaje_i <= '0';
+            rstPuntaje_i <= '0';
+            sumarVida <= '0';
             rstVidas_i <= '0';
             restarVida_i <= '0';
             rstRegistroUsuario_i <= '0';
@@ -345,7 +365,7 @@ begin
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas, selectorMuxFinJuego_i, finJuego_i)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas, selectorMuxFinJuego_i, finJuego_i, indicadorCronometroFin)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is
@@ -399,8 +419,14 @@ begin
                         next_state <= S8;
                     end if;
                 else
-                    next_state <= S1;
+                    next_state <= S10;
                 end if;
+            when S10 =>
+                if indicadorCronometroFin = '1' then
+                    next_state <= S1;
+                else
+                    next_state <= S10;
+                end if; 
             when S9 =>
                 if finJuego_i = '1' then
                     if cronometroPuntaje = '1' then 

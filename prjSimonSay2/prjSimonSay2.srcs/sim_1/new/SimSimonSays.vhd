@@ -10,14 +10,10 @@ architecture Behavioral of SimSimonSays is
 component eSimonSays is
     Port (
         CLK, CLKBotones, RST, enter, A,B,C,D, modoDemo: in std_logic;
-        salidaMux1: out STD_LOGIC_VECTOR(3 downto 0);
-        salidaMux2: out STD_LOGIC_VECTOR(3 downto 0);
-        salidaMux3: out STD_LOGIC_VECTOR(3 downto 0);
-        salidaMux4: out STD_LOGIC_VECTOR(3 downto 0);
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
-        ledVictoria: out STD_LOGIC;
+        ledVictoria, selectorMensaje: out STD_LOGIC;
         ledFinalJuego: out STD_LOGIC_VECTOR(3 downto 0);
         vidasOut : out integer range 0 to 2;
         puntajeOut : out integer range 0 to 4096
@@ -25,8 +21,8 @@ component eSimonSays is
 end component eSimonSays;
 
 
-signal salidaMux1, salidaMux2, salidaMux3, salidaMux4, secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
-signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria, modoDemo: STD_LOGIC;
+signal secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
+signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria, selectorMensaje, modoDemo: STD_LOGIC;
 signal puntajeOut : integer range 0 to 2048;
 signal vidasOut : integer range 0 to 2;
 signal ledFinalJuego: STD_LOGIC_VECTOR(3 downto 0);
@@ -44,14 +40,11 @@ SimSimonSays: eSimonSays port map (
     D => D,
     modoDemo => modoDemo,
     CLKBotones => CLKBotones,
-    salidaMux1 => salidaMux1,
-    salidaMux2 => salidaMux2,
-    salidaMux3 => salidaMux3,
-    salidaMux4 => salidaMux4,
     secuencia => secuencia,
     secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro,
     ledVictoria => ledVictoria,
+    selectorMensaje => selectorMensaje,
     ledFinalJuego => ledFinalJuego,
     vidasOut => vidasOut,
     puntajeOut => puntajeOut

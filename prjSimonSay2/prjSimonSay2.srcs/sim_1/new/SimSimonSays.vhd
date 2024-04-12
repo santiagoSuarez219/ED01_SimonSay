@@ -9,7 +9,7 @@ architecture Behavioral of SimSimonSays is
 
 component eSimonSays is
     Port (
-        CLK, CLKBotones, RST, enter, A,B,C,D, modoDemo: in std_logic;
+        CLK, CLKBotones, CLKLento, RST, enter, A,B,C,D, modoDemo: in std_logic;
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
@@ -22,7 +22,7 @@ end component eSimonSays;
 
 
 signal secuencia, secuenciaUsuario, outCronometro: STD_LOGIC_VECTOR(3 downto 0);
-signal CLK, RST, enter,A,B,C,D,CLKBotones, ledVictoria, selectorMensaje, modoDemo: STD_LOGIC;
+signal CLK, RST, enter,A,B,C,D,CLKBotones, CLKLento, ledVictoria, selectorMensaje, modoDemo: STD_LOGIC;
 signal puntajeOut : integer range 0 to 2048;
 signal vidasOut : integer range 0 to 2;
 signal ledFinalJuego: STD_LOGIC_VECTOR(3 downto 0);
@@ -40,6 +40,7 @@ SimSimonSays: eSimonSays port map (
     D => D,
     modoDemo => modoDemo,
     CLKBotones => CLKBotones,
+    CLKLento => CLKLento,
     secuencia => secuencia,
     secuenciaUsuario => secuenciaUsuario,
     outCrometro => outCronometro,
@@ -66,6 +67,14 @@ P_CLK_BOTONES: process
     wait for 10 ns;
 end process;
 
+P_CLK_LENTO: process
+    begin
+    CLKLento <= '1';
+    wait for 40 ns;
+    CLKLento <= '0';
+    wait for 40 ns;
+end process;
+
 
 procEstimulos: process
     begin
@@ -83,7 +92,7 @@ procEstimulos: process
         enter <= '1';
         wait for 20 ns;
         enter <= '0';
-        wait for 30 ns;
+        wait for 320 ns;
 
         A <= '1';
         wait for 60 ns;
@@ -162,39 +171,6 @@ procEstimulos: process
         wait for 300 ns;
 
         -- El usuario pierde, la secuencia no es igual
-        A <= '1';
-        wait for 50 ns;
-        A <= '0';
-        wait for 50 ns;
-        D <= '1';
-        wait for 50 ns;
-        D <= '0';
-        wait for 50 ns;
-        A <= '1';
-        wait for 50 ns;
-        A <= '0';
-        wait for 50 ns;
-        B <= '1';
-        wait for 50 ns;
-        B <= '0';
-        wait for 50 ns;
-        A <= '1'; -- Esta no la acierta
-        wait for 50 ns;
-        A <= '0';
-        wait for 50 ns;
-        C <= '1';
-        wait for 50 ns;
-        C <= '0';
-        wait for 50 ns;
-        D <= '1';
-        wait for 50 ns;
-        D <= '0';
-        enter <= '1';
-        wait for 50 ns;
-        enter <= '0';        
-        wait for 200 ns;
-
-        --EL CRONOMETRO LLEGA A CERO
         -- A <= '1';
         -- wait for 50 ns;
         -- A <= '0';
@@ -203,6 +179,39 @@ procEstimulos: process
         -- wait for 50 ns;
         -- D <= '0';
         -- wait for 50 ns;
+        -- A <= '1';
+        -- wait for 50 ns;
+        -- A <= '0';
+        -- wait for 50 ns;
+        -- B <= '1';
+        -- wait for 50 ns;
+        -- B <= '0';
+        -- wait for 50 ns;
+        -- A <= '1'; -- Esta no la acierta
+        -- wait for 50 ns;
+        -- A <= '0';
+        -- wait for 50 ns;
+        -- C <= '1';
+        -- wait for 50 ns;
+        -- C <= '0';
+        -- wait for 50 ns;
+        -- D <= '1';
+        -- wait for 50 ns;
+        -- D <= '0';
+        -- enter <= '1';
+        -- wait for 50 ns;
+        -- enter <= '0';        
+        -- wait for 200 ns;
+
+        --EL CRONOMETRO LLEGA A CERO
+        A <= '1';
+        wait for 50 ns;
+        A <= '0';
+        wait for 50 ns;
+        D <= '1';
+        wait for 50 ns;
+        D <= '0';
+        wait for 50 ns;
 
         -- MODO DEMO
         -- A <= '1';

@@ -14,7 +14,7 @@ end eContadorSecuencia;
 architecture Behavioral of eContadorSecuencia is
 
 signal Q_i : STD_LOGIC_VECTOR(4 downto 0) := "00000";
-signal i : integer range 1 to 32 := 0;
+signal i : integer range 0 to 32 := 0;
 
 begin
     process(CLK, RST)

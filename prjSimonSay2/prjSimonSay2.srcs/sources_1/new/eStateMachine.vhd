@@ -3,10 +3,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, indicadorCronometroFin: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, indicadorCronometroFin: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -20,7 +20,7 @@ type state_type is (S0, S1, S2, S3, S4, S5, S6, S7, S8, S9, S10); -- Declarar to
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
-signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, selectorClkSecuencia_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i: STD_LOGIC;
+signal S_i, selectorSecuenciaMux_i, rstSecuenciaAleatoria_i, rstCronometro_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i: STD_LOGIC;
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
 signal iSecuenciaUsuario_dir_i: integer range 0 to 31;
 signal iSecuenciaUsuario_i: STD_LOGIC_VECTOR(3 downto 0);
@@ -41,9 +41,7 @@ begin
                 rstCronometro <= '1';
                 iSecuenciaUsuario_dir <= 0;
                 iSecuenciaUsuario <= "0000";
-                selectorClkSecuencia <= '0';
                 rstCtoComparador <= '1';
-
                 selectorSecuenciaAleatoriaMux <= '0';
                 enCtoComparador <= '0';
                 sumarPuntaje <= '0';
@@ -64,9 +62,7 @@ begin
                 rstCronometro <= rstCronometro_i;
                 iSecuenciaUsuario_dir <= iSecuenciaUsuario_dir_i;
                 iSecuenciaUsuario <= iSecuenciaUsuario_i;
-                selectorClkSecuencia <= selectorClkSecuencia_i;
                 rstCtoComparador <= rstCtoComparador_i;
-
                 selectorSecuenciaAleatoriaMux <= selectorSecuenciaAleatoriaMux_i;
                 enCtoComparador <= enCtoComparador_i;
                 sumarPuntaje <= sumarPuntaje_i;
@@ -87,17 +83,15 @@ begin
     OUTPUT_DECODE: process (state)
     variable i : integer range 0 to 31 := 0;
     begin
-        if state = S0 then
-            S_i <= '0';
-            selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '1';
-            longitudSecuencia_i <= 3;
-            rstCronometro_i <= '1';
-            iSecuenciaUsuario_dir_i <= 0;
-            iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
+        if state = S0 then -- Estado en donde se muestra el mensaje.
+            S_i <= '0'; -- Este selector es una salida del sistema para mostrar o no el mensaje
+            selectorSecuenciaMux_i <= '0'; -- Muestra ceros en la salida de la secuencia. 
+            rstSecuenciaAleatoria_i <= '1'; -- Reset del contador secuencia
+            longitudSecuencia_i <= 3; -- Longitud de la secuencia
+            rstCronometro_i <= '1'; -- Cronometro de 3s para que el usuario ingrese un valor
+            iSecuenciaUsuario_dir_i <= 0; -- Direccion del array del registro secuencia usuario
+            iSecuenciaUsuario_i <= "0000"; -- Valor que se sobreescribe en la direccion del array secuencia usuario
             rstCtoComparador_i <= '1';
-
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -111,20 +105,18 @@ begin
             selectorMuxFinJuego_i <= '0';
             finJuego_i <= '0';
         elsif state = S1 then -- Estado de mostrar secuencia
-            S_i <= '1';
-            selectorSecuenciaMux_i <= '1';
-            rstSecuenciaAleatoria_i <= '0';
-            longitudSecuencia_i <= longitudSecuencia_i + 1;
-            rstCronometro_i <= '1';
-            iSecuenciaUsuario_dir_i <= 0;
+            S_i <= '1'; -- Deja de mostrar el mensaje y empieza el juego
+            longitudSecuencia_i <= longitudSecuencia_i + 1; -- La secuencia aumenta en 1, en la primera iteracion empieza en 4
+            selectorSecuenciaMux_i <= '1'; -- Permite que se vea la secuencia
+            rstSecuenciaAleatoria_i <= '0'; -- Inicia el contador de la secuencia
+            rstCronometro_i <= '1'; -- Cronometro de 3s para que el usuario ingrese un valor
+            iSecuenciaUsuario_dir_i <= 0; 
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             i := 0; -- Se reinicia el registro
             restarVida_i <= '0';
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             rstCtoComparador_i <= '1';
-
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -135,16 +127,14 @@ begin
             selectorMuxFinJuego_i <= '0';
             finJuego_i <= '0';
         elsif state = S2 then --  Estado de ingresar secuencia
-            S_i <= '1';
-            selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '1';
-            longitudSecuencia_i <= longitudSecuencia_i;
-            rstCronometro_i <= '0';
-            iSecuenciaUsuario_dir_i <= i;
-            iSecuenciaUsuario_i <= iSecuenciaUsuario_i;
-            selectorClkSecuencia_i <= '0';
+            S_i <= '1'; 
+            selectorSecuenciaMux_i <= '0'; -- Muestra un cero a la salida de la secuencia
+            rstSecuenciaAleatoria_i <= '1'; -- Detiene el contador de la secuencia y lo reinicia
+            longitudSecuencia_i <= longitudSecuencia_i; 
+            rstCronometro_i <= '0'; -- Empieza a contar el cronometro por 3s 
+            iSecuenciaUsuario_dir_i <= i; -- i va aumentando a medida que el usuario ingresa los datos
+            iSecuenciaUsuario_i <= iSecuenciaUsuario_i; -- valor que se va sobreescribir
             rstCtoComparador_i <= '1';
-
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -162,8 +152,8 @@ begin
             selectorSecuenciaMux_i <= '0';
             rstSecuenciaAleatoria_i <= '1';  
             longitudSecuencia_i <= longitudSecuencia_i;
-            rstCronometro_i <= '1';
-            iSecuenciaUsuario_dir_i <= i;
+            rstCronometro_i <= '1'; -- Reinicia el cronometro
+            iSecuenciaUsuario_dir_i <= i; 
             rstCtoComparador_i <= '1';
             i := i + 1;
             if A = '1' then
@@ -175,8 +165,6 @@ begin
             elsif D = '1' then
                 iSecuenciaUsuario_i <= "1111";
             end if;
-
-            selectorClkSecuencia_i <= '1';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -197,9 +185,7 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '0';
             sumarPuntaje_i <= '0';
@@ -219,7 +205,6 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '1';
             enCtoComparador_i <= '1';
@@ -240,9 +225,7 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
-
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados + 1;
@@ -263,9 +246,7 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
-
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             cantidadSumarPuntaje_i <= aciertosCantidad * 7;
@@ -290,7 +271,6 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
@@ -325,7 +305,6 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '0';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
@@ -347,9 +326,7 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            selectorClkSecuencia_i <= '0';
             rstCtoComparador_i <= '1';
-
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             juegosGanados <= juegosGanados;
@@ -365,7 +342,7 @@ begin
         end if;
     end process;
  
-    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas, selectorMuxFinJuego_i, finJuego_i, indicadorCronometroFin)
+    NEXT_STATE_DECODE: process (state, enter, iSecuenciaAleatoriaT, A, B, C, D, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, cantidadVidas, selectorMuxFinJuego_i, finJuego_i, indicadorCronometroFin)
     begin
         next_state <= state;  --default is to stay in current state
         case (state) is

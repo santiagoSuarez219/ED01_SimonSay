@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eSimonSays is
     Port (
-        CLK, CLKBotones, RST, enter, A,B,C,D, modoDemo: in std_logic;
+        CLK, CLKBotones, CLKLento, RST, enter, A,B,C,D, modoDemo: in std_logic;
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
@@ -27,10 +27,10 @@ end component eMux2to1;
 
 component eStateMachine is
     Port ( 
-        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, CLKBotones, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, indicadorCronometroFin: in std_logic;
+        CLK, RST, enter, iSecuenciaAleatoriaT, A,B,C,D, indicadorCero, esIgualSecuencia, notEsIgualSecuencia, cronometroPuntaje, indicadorCronometroFin: in std_logic;
         aciertosCantidad: in integer range 0 to 32;
         cantidadVidas: in integer range 0 to 2;
-        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, selectorClkSecuencia, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
+        S, selectorSecuenciaMux, rstSecuenciaAleatoria, rstCronometro, rstCtoComparador, selectorSecuenciaAleatoriaMux, enCtoComparador, sumarPuntaje, rstPuntaje, rstCronometroPuntaje, rstVidas, sumarVida, restarVida, rstRegistroUsuario, selectorMuxFinJuego, finJuego: out STD_LOGIC;
         cantidadSumarPuntaje: out integer range 0 to 244;
         longitudSecuencia: out integer range 3 to 32;
         iSecuenciaUsuario_dir: out integer range 0 to 31;
@@ -129,7 +129,13 @@ component eContadorVidas is
     );
 end component eContadorVidas;
 
-signal selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, selectorClkSecuencia_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i,indicadorCronometroFin_i: STD_LOGIC;
+component slowClock is
+    Port ( fastClock : in STD_LOGIC;
+           slowClock : inout STD_LOGIC;
+           prescaler : in INTEGER RANGE 0 TO 50000000);
+end component slowClock;
+
+signal selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, CLKBotones_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i,indicadorCronometroFin_i, clkContadorSecuencia_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -140,7 +146,7 @@ signal cantidadSumar_i: integer range 0 to 244;
 signal vidasOut_i: integer range 0 to 2;
 
 begin
-    Inst5Mux2to1: eMux2to1 port map(I0 => "1110", I1 => outSecuencia_i, S => selectorSecuenciaMux_i, O => secuencia);
+    Inst5Mux2to1: eMux2to1 port map(I0 => "0000", I1 => outSecuencia_i, S => selectorSecuenciaMux_i, O => secuencia);
     InstStateMachine: eStateMachine port map(
         CLK => CLK, 
         RST => RST, 
@@ -150,7 +156,6 @@ begin
         B => B,
         C => C,
         D => D,
-        CLKBotones => CLKBotones_i,
         indicadorCero => indicadorCero_i,
         esIgualSecuencia => ledVictoria_i,
         notEsIgualSecuencia => notEsIgual_i,
@@ -161,7 +166,6 @@ begin
         selectorSecuenciaMux => selectorSecuenciaMux_i,
         rstSecuenciaAleatoria => rstSecuenciaAleatoria_i,
         rstCronometro => rstCronometro_i,
-        selectorClkSecuencia => selectorClkSecuencia_i,
         rstCtoComparador  => rstCtoComparador_i,
         selectorSecuenciaAleatoriaMux => selectorSecuenciaAleatoriaMux_i,
         enCtoComparador => enCtoComparador_i,
@@ -187,16 +191,16 @@ begin
         outSecuencia => outSecuencia_i
     );
     InstContadorSecuencia: eContadorSecuencia port map(
-        CLK => CLK,
+        CLK => CLKLento,
         RST => rstSecuenciaAleatoria_i,
         longitudSecuencia => longitudSecuencia_i,
         indicadorSecuenciaTerminada => indicadorSecuenciaTerminada_i,
         Q => Q_i
     );
-    InstCronometro: eCronometro generic map (
+    InstCronometro: eCronometro generic map ( -- Cronometro de la secuencia
         cuenta => 3
     ) port map( 
-        CLK => CLKBotones,
+        CLK => CLKLento,
         RST => rstCronometro_i,
         indicadorCero => indicadorCero_i,
         outCuenta => outCrometro
@@ -226,12 +230,6 @@ begin
     );
     secuenciaUsuario <= iSecuenciaUsuario_i;
     
-    Inst1BitMux2to1: e1BitMux2 port map( --Tal vez se podria eliminar
-        I0 => '0',
-        I1 => CLKBotones,
-        S => selectorClkSecuencia_i,
-        O => CLKBotones_i
-    );
     --Titilen los leds
     Inst2BitMux2to1: e1BitMux2 port map( 
         I0 => '0',
@@ -304,6 +302,12 @@ begin
             I1 => 1,
             S => rstCtoComparador_i,
             O => selectorSecuenciaUsuarioMux_i
+    );
+
+    InstSlowClockSecuencia: slowClock port map (  --Preescaler sin conectar
+        fastClock => CLK,
+        slowClock => clkContadorSecuencia_i,
+        prescaler => 25000000
     );
         
 end Behavioral;

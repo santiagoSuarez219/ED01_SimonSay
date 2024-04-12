@@ -16,7 +16,7 @@ end eStateMachine;
 
 architecture Behavioral of eStateMachine is
 
-type state_type is (S0, S1, S2, S3, S5, S6, S7, S9, S10); -- Declarar todos los estados en esta parte
+type state_type is (S0, S1, S2, S3, S5, S6, S7, S9); -- Declarar todos los estados en esta parte
 signal state, next_state : state_type;
 
 -- Declarar señales internas para todas las salidas
@@ -95,9 +95,9 @@ begin
             selectorSecuenciaAleatoriaMux_i <= '0'; -- El contador esta habilitado para pedir valores de la secuencia aleatoria
             enCtoComparador_i <= '0'; -- El circuito comparador permanece apagado
             sumarPuntaje_i <= '0';
-            rstPuntaje_i <= '1';
+            rstPuntaje_i <= '1'; -- Reinicia el puntaje
             cantidadSumarPuntaje_i <= 0;
-            rstCronometroPuntaje_i <= '1';
+            rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
             rstVidas_i <= '1';
             sumarVida_i <= '0';
             restarVida_i <= '0';
@@ -122,8 +122,8 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
-            rstCronometroPuntaje_i <= '1';
-            rstRegistroUsuario_i <= '1';
+            rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
+            rstRegistroUsuario_i <= '1'; -- Se resetea el registro de usuario a ceros
             selectorMuxFinJuego_i <= '0';
             finJuego_i <= '0';
         elsif state = S2 then --  Estado de ingresar secuencia
@@ -140,11 +140,11 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
-            rstCronometroPuntaje_i <= '1';
+            rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
-            rstRegistroUsuario_i <= '0';
+            rstRegistroUsuario_i <= '0'; -- No se resetea el registro de usuario
             selectorMuxFinJuego_i <= '0';
             finJuego_i <= '0';
         elsif state = S3 then -- Estado de guardar el registro
@@ -171,11 +171,11 @@ begin
             sumarPuntaje_i <= '0';
             rstPuntaje_i <= '0';
             cantidadSumarPuntaje_i <= 0;
-            rstCronometroPuntaje_i <= '1';
+            rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
             rstVidas_i <= '0';
             sumarVida_i <= '0';
             restarVida_i <= '0';
-            rstRegistroUsuario_i <= '0';
+            rstRegistroUsuario_i <= '0'; -- No se resetea el registro de usuario
             selectorMuxFinJuego_i <= '0';
             finJuego_i <= '0';
         elsif state = S5 then -- Estado de comparacion
@@ -189,14 +189,14 @@ begin
             rstCtoComparador_i <= '0'; -- El circuito comparador comienza a funcionar
             selectorSecuenciaAleatoriaMux_i <= '1'; -- El comparador esta habilitado para pedir valores de la secuencia aleatoria
             enCtoComparador_i <= '1'; -- El circuito comparador se enciende
-            sumarPuntaje_i <= '0';
-            rstPuntaje_i <= '0';
-            cantidadSumarPuntaje_i <= 0;
-            rstCronometroPuntaje_i <= '1';
-            rstVidas_i <= '0';
-            sumarVida_i <= '0';
-            restarVida_i <= '0';
-            rstRegistroUsuario_i <= '0';
+            sumarPuntaje_i <= '0'; -- No suma puntaje
+            rstPuntaje_i <= '0'; -- No reinicia el puntaje
+            cantidadSumarPuntaje_i <= 0; -- No se suma nada al puntaje
+            rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
+            rstVidas_i <= '0'; -- No se resetean las vidas
+            sumarVida_i <= '0'; -- No se suma vida
+            restarVida_i <= '0'; -- No se resta vida
+            rstRegistroUsuario_i <= '0'; -- No se resetea el registro de usuario
             selectorMuxFinJuego_i <= '0';
         elsif state = S6 then --Estado gano el juego, 
             S_i <= '1'; -- Muestra los valores del juego 
@@ -216,23 +216,23 @@ begin
             else
                 cantidadSumarPuntaje_i <= aciertosCantidad * 7;
             end if;
-            sumarPuntaje_i <= '1';
-            if juegosGanados = 32 then
-                rstCronometroPuntaje_i <= '0';
-                selectorMuxFinJuego_i <= '1';
+            sumarPuntaje_i <= '1'; -- Se suma el puntaje
+            if juegosGanados = 32 then -- Si gano todos los juegos
+                rstCronometroPuntaje_i <= '0'; -- Se muestra el puntaje obtenido
+                selectorMuxFinJuego_i <= '1'; -- Se muestra los LED parpadeando
             else
-                rstCronometroPuntaje_i <= '1';
-                selectorMuxFinJuego_i <= '0';
+                rstCronometroPuntaje_i <= '1'; -- El cronometro puntaje permanece apagado
+                selectorMuxFinJuego_i <= '0'; -- No se muestran los LEDs parpadeando
             end if;
             rstPuntaje_i <= '0'; -- No se resetea puntaje
-            if juegosGanados = 16 then
+            if juegosGanados = 16 then -- Si los juegos ganados es igual a 16 se suma una vida
                 sumarVida_i <= '1';
             else
                 sumarVida_i <= '0'; 
             end if;
             rstVidas_i <= '0'; -- Se mantiene el valor de las vidas
             restarVida_i <= '0'; -- No se resta vidas
-            rstRegistroUsuario_i <= '0'; 
+            rstRegistroUsuario_i <= '0'; -- No se resetea el registro del usuario
         elsif state = S7 then --Estado del jugador pierde. 
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -241,7 +241,7 @@ begin
             rstCronometro_i <= '1';
             iSecuenciaUsuario_dir_i <= i;
             iSecuenciaUsuario_i <= "0000";
-            rstCtoComparador_i <= '0';
+            rstCtoComparador_i <= '1';
             selectorSecuenciaAleatoriaMux_i <= '0';
             enCtoComparador_i <= '0';
             cantidadSumarPuntaje_i <= aciertosCantidad * 7;
@@ -258,27 +258,6 @@ begin
             restarVida_i <= '1';
             rstRegistroUsuario_i <= '1';
             selectorMuxFinJuego_i <= '0';
-        elsif state = S10 then --Estado de cronometro victoria
-            S_i <= '1';
-            selectorSecuenciaMux_i <= '0';
-            rstSecuenciaAleatoria_i <= '1';
-            longitudSecuencia_i <= longitudSecuencia_i;
-            rstCronometro_i <= '1';
-            iSecuenciaUsuario_dir_i <= i;
-            iSecuenciaUsuario_i <= "0000";
-            rstCtoComparador_i <= '0';
-            selectorSecuenciaAleatoriaMux_i <= '0';
-            enCtoComparador_i <= '0';
-            juegosGanados <= juegosGanados;
-            cantidadSumarPuntaje_i <= cantidadSumarPuntaje_i;
-            rstCronometroPuntaje_i <= rstCronometroPuntaje_i;
-            selectorMuxFinJuego_i <= selectorMuxFinJuego_i;
-            sumarPuntaje_i <= '1';
-            rstPuntaje_i <= '0';
-            sumarVida_i <= '0';
-            rstVidas_i <= '0';
-            restarVida_i <= '0';
-            rstRegistroUsuario_i <= '0';
         elsif state = S9 then -- Estado de cronometro cuando pierde el jugador
             S_i <= '1';
             selectorSecuenciaMux_i <= '0';
@@ -351,16 +330,15 @@ begin
                         next_state <= S6;
                     end if;
                 else
-                    next_state <= S10;
+                    if indicadorCronometroFin = '1' then
+                        next_state <= S1;
+                    else
+                        next_state <= S6;
+                    end if;
+                    -- next_state <= S10;
                 end if;
             when S7 =>
                 next_state <= S9;
-            when S10 =>
-                if indicadorCronometroFin = '1' then
-                    next_state <= S1;
-                else
-                    next_state <= S10;
-                end if; 
             when S9 =>
                 if finJuego_i = '1' then
                     if cronometroPuntaje = '1' then 

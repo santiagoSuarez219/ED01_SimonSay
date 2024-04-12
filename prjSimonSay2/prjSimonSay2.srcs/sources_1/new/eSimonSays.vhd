@@ -305,6 +305,7 @@ begin
             O => selectorSecuenciaUsuarioMux_i
     );
 
+    -- Este es un slow clock de un periodo de 1 segundo y va conectador a todos los cronometros
     InstSlowClockSecuencia: slowClock port map (  -- sin conectar
         fastClock => CLK,
         slowClock => clkContadorSecuencia_i,

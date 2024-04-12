@@ -311,8 +311,8 @@ begin
             when S3 =>
                 if (A = '0' and B = '0' and C = '0' and D = '0' and rising_edge(clkBotones)) then    
                     next_state <= S2;
-                else 
-                    next_state <= S3;
+                --else 
+                   -- next_state <= S3;
                 end if;
             when S5 =>
                 if esIgualSecuencia = '1' then

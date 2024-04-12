@@ -59,7 +59,7 @@ signal dataBCD_i: std_logic_vector(3 downto 0);
 
 begin
 
-instanciaSlowClock: slowClock port map(fastclock => clk, slowClock => slowClock_i, prescaler => 50000000);
+instanciaSlowClock: slowClock port map(fastclock => clk, slowClock => slowClock_i, prescaler => 50000);
 instanciavidaBinaria: vidaBinaria port map(vidasInteger => vidasInteger, vidasBinaria => vidasBinaria_i);
 instanciaVisualizarPuntaje: visualizarPuntaje port map(puntaje => puntaje, milesimas => milesimas_i, centecimas => centecimas_i, decimas => decimas_i, unidades => unidades_i);
 instanciaSelectorMensajePuntaje: selectorMensajePuntaje port map(milesimas => milesimas_i, centecimas => centecimas_i, decimas => decimas_i, unidades => unidades_i, selector => S, milesimasSelector => milesimas_ii, centecimasSelector => centecimas_ii, decimasSelector => decimas_ii, unidadesSelector => unidades_ii);

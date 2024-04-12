@@ -3,7 +3,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity eSimonSays is
     Port (
-        CLK, CLKBotones, CLKLento, RST, enter, A,B,C,D, modoDemo: in std_logic;
+        --CLK, CLKBotones, CLKLento, RST, enter, A,B,C,D, modoDemo: in std_logic;
+        CLK, RST, enter, A,B,C,D, modoDemo: in std_logic;
         secuencia: out STD_LOGIC_VECTOR(3 downto 0);
         secuenciaUsuario: out STD_LOGIC_VECTOR(3 downto 0);
         outCrometro: out STD_LOGIC_VECTOR(3 downto 0);
@@ -135,7 +136,7 @@ component slowClock is
            prescaler : in INTEGER RANGE 0 TO 50000000);
 end component slowClock;
 
-signal selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, clkBotones_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i,indicadorCronometroFin_i, clkContadorSecuencia_i: STD_LOGIC;
+signal selectorSecuenciaMux_i, enableSecuenciaOut_i, indicadorSecuenciaTerminada_i, rstSecuenciaAleatoria_i, indicadorCero_i, rstCronometro_i, clkBotones_i, clkSegundo_i, clkLeds_i, rstCtoComparador_i, selectorSecuenciaAleatoriaMux_i, enCtoComparador_i, ledVictoria_i, cronometroIndicadorComparador_i, rstCronometroComparador_i, notEsIgual_i, sumarPuntaje_i, rstPuntaje_i, rstCronometroPuntaje_i, cronometroPuntaje_i, rstVidas_i,sumarVida_i, restarVida_i, rstRegistroUsuario_i, selectorMuxFinJuego_i, finJuego_i,indicadorCronometroFin_i, clkContadorSecuencia_i: STD_LOGIC;
 signal outSecuencia_i,iSecuenciaUsuario_i, outRegistroSecUsu_i, outCuentaComparador, outCuentaPuntaje : STD_LOGIC_VECTOR(3 downto 0);
 signal Q_i, selectorSecuencia_i, selectorSecuenciaComparador_i: STD_LOGIC_VECTOR(4 downto 0);
 signal longitudSecuencia_i: integer range 3 to 32 := 3;
@@ -149,7 +150,7 @@ begin
     Inst5Mux2to1: eMux2to1 port map(I0 => "0000", I1 => outSecuencia_i, S => selectorSecuenciaMux_i, O => secuencia);
     InstStateMachine: eStateMachine port map(
         CLK => CLK,
-        clkBotones => clkBotones,
+        clkBotones => clkBotones_i,
         RST => RST, 
         enter => enter,
         iSecuenciaAleatoriaT => indicadorSecuenciaTerminada_i,
@@ -192,7 +193,7 @@ begin
         outSecuencia => outSecuencia_i
     );
     InstContadorSecuencia: eContadorSecuencia port map(
-        CLK => CLKLento,
+        CLK => clkSegundo_i,
         RST => rstSecuenciaAleatoria_i,
         longitudSecuencia => longitudSecuencia_i,
         indicadorSecuenciaTerminada => indicadorSecuenciaTerminada_i,
@@ -201,7 +202,7 @@ begin
     InstCronometro: eCronometro generic map ( -- Cronometro de la secuencia
         cuenta => 3
     ) port map( 
-        CLK => CLKLento,
+        CLK => clkSegundo_i,
         RST => rstCronometro_i,
         indicadorCero => indicadorCero_i,
         outCuenta => outCrometro
@@ -209,7 +210,7 @@ begin
     Inst2Cronometro: eCronometro generic map ( -- Cronometro LED Victoria
         cuenta => 5
     ) port map (
-        CLK => CLK,
+        CLK => clkSegundo_i,
         RST => rstCronometroComparador_i, 
         indicadorCero => cronometroIndicadorComparador_i, 
         outCuenta => outCuentaComparador
@@ -217,7 +218,7 @@ begin
     Inst3Cronometro: eCronometro generic map (  -- CronometroPuntaje
         cuenta => 5
     ) port map (
-        CLK => CLK,
+        CLK => clkSegundo_i,
         RST => rstCronometroPuntaje_i, 
         indicadorCero => cronometroPuntaje_i, 
         outCuenta => outCuentaPuntaje
@@ -234,25 +235,25 @@ begin
     --Titilen los leds
     Inst2BitMux2to1: e1BitMux2 port map( 
         I0 => '0',
-        I1 => CLK,
+        I1 => clkLeds_i,  -- Falta reloj de los led
         S => selectorMuxFinJuego_i,
         O => ledFinalJuego(0)
     );
     Inst3BitMux2to1: e1BitMux2 port map( 
         I0 => '0',
-        I1 => CLK,
+        I1 => clkLeds_i,
         S => selectorMuxFinJuego_i,
         O => ledFinalJuego(1)
     );
     Inst4BitMux2to1: e1BitMux2 port map( 
         I0 => '0',
-        I1 => CLK,
+        I1 => clkLeds_i,
         S => selectorMuxFinJuego_i,
         O => ledFinalJuego(2)
     );
     Inst5BitMux2to1: e1BitMux2 port map( 
         I0 => '0',
-        I1 => CLK,
+        I1 => clkLeds_i,
         S => selectorMuxFinJuego_i,
         O => ledFinalJuego(3)
     );
@@ -307,12 +308,18 @@ begin
     InstSlowClockSecuencia: slowClock port map (  -- sin conectar
         fastClock => CLK,
         slowClock => clkContadorSecuencia_i,
-        prescaler => 25000000 -- TODO: Modificar preescaler
+        prescaler => 50000000 -- TODO: Modificar preescaler
     );
 
     InstSlowClockBotones: slowClock port map (  -- sin conectar
         fastClock => CLK,
         slowClock => clkBotones_i,
+        prescaler => 5000000 -- TODO: Modificar preescaler
+    );
+
+    InstSlowClockLeds: slowClock port map (  -- sin conectar
+        fastClock => CLK,
+        slowClock => clkLeds_i,
         prescaler => 25000000 -- TODO: Modificar preescaler
     );
         

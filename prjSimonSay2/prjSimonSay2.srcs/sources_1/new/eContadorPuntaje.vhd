@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity eContadorPuntaje is
     Port ( 
-        CLK, RST, sumarPuntaje: in STD_LOGIC;
+        RST, sumarPuntaje: in STD_LOGIC;
         cantidadSumar: in integer range 0 to 244;
         puntajeOut : out integer range 0 to 4096
     );

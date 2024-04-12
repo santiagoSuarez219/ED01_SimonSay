@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 
 entity eContadorVidas is
     Port ( 
-        CLK, RST, SumarVida, RestarVida  : in STD_LOGIC;
+        RST, SumarVida, RestarVida  : in STD_LOGIC;
         vidasOut : out integer range 0 to 2
     );
 end eContadorVidas;

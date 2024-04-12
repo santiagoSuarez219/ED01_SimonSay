@@ -116,7 +116,7 @@ end component Mux2to1Integer;
 
 component eContadorPuntaje is
     Port ( 
-        CLK, RST, sumarPuntaje: in STD_LOGIC;
+        RST, sumarPuntaje: in STD_LOGIC;
         cantidadSumar: in integer range 0 to 244;
         puntajeOut : out integer range 0 to 4096
     );
@@ -124,7 +124,7 @@ end component eContadorPuntaje;
 
 component eContadorVidas is
     Port ( 
-        CLK, RST, SumarVida, RestarVida  : in STD_LOGIC;
+        RST, SumarVida, RestarVida  : in STD_LOGIC;
         vidasOut : out integer range 0 to 2
     );
 end component eContadorVidas;
@@ -275,7 +275,6 @@ begin
     ledVictoria <= ledVictoria_i;
 
     InstContadorVidas: eContadorVidas port map(
-        CLK => CLK,
         RST => rstVidas_i,
         SumarVida => sumarVida_i,
         RestarVida => restarVida_i,
@@ -284,7 +283,6 @@ begin
     vidasOut <= vidasOut_i;
 
     InsteContadorPuntaje: eContadorPuntaje port map(
-        CLK => CLK,
         RST => rstPuntaje_i,
         sumarPuntaje => sumarPuntaje_i,
         cantidadSumar => cantidadSumar_i,

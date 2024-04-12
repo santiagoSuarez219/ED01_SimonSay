@@ -13,16 +13,21 @@ end eContadorPuntaje;
 architecture Behavioral of eContadorPuntaje is
 
 begin
-    process(CLK, RST)
+    process(RST, sumarPuntaje)
         variable puntajeInterno : integer range 0 to 4096;
     begin
         if RST = '1' then
             puntajeInterno := 0;
-        elsif rising_edge(CLK) then
+        else
             if sumarPuntaje = '1' then
                 puntajeInterno := puntajeInterno + cantidadSumar;
             end if;
         end if;
+        -- elsif rising_edge(CLK) then
+        --     if sumarPuntaje = '1' then
+        --         puntajeInterno := puntajeInterno + cantidadSumar;
+        --     end if;
+        --end if;
         puntajeOut <= puntajeInterno;
     end process;
 

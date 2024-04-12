@@ -117,7 +117,7 @@ begin
             notEsIgual_i <= notEsIgual_i;
             indicadorCronometroFin_i <= '1';
             rstCronometro_i <= '1';
-        elsif state = S5 then -- Se termina el cronometro
+        elsif state = S5 then -- 
             aciertos_i <= aciertos_i;    
             selectorSecuencia_i <= selectorSecuencia_i;
             selectorRegistro_i <= selectorRegistro_i; 
